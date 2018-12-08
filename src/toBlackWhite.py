@@ -14,10 +14,10 @@ def ToBlackAndWhite(input_path,output_path):
 
     for i in range(width):
         for j in range(height):
-            if(originalPixels[i,j][0]<127):
-                newPixels[i,j] = (0,0,0)
+            if(originalPixels[i,j]<127):
+                newPixels[i,j] = (0)
             else:
-                newPixels[i,j] = (255,255,255)
+                newPixels[i,j] = (255)
     out.show()
     out.save(output_path)
 

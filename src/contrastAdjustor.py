@@ -14,9 +14,9 @@ def AdjustContrast(input_path,output_path,contrastFactor):
 
     for i in range(width):
         for j in range(height):
-            grayscaleValue = int(originalPixels[i,j][0])
+            grayscaleValue = int(originalPixels[i,j])
             contrastValue = int(pow(float(grayscaleValue)*2.0/255.0,contrastFactor)/2.0*255.0)
-            newPixels[i,j] = (contrastValue,contrastValue,contrastValue)
+            newPixels[i,j] = (contrastValue)
 
     out.show()
     out.save(output_path)
