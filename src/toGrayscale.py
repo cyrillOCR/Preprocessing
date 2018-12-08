@@ -16,7 +16,8 @@ def ToGrayscale(input_path,output_path):
             # 0.21 R + 0.72 G + 0.07 B.
             grayscaleValue = int(0.21*originalPixels[i,j][0]+0.72*originalPixels[i,j][1]+0.07*originalPixels[i,j][2])
             newPixels[i,j] = (grayscaleValue,grayscaleValue,grayscaleValue)
-    out.show()
+    # decomment this to show result file
+    #out.show()
     out.save(output_path)
 
 if __name__=='__main__':

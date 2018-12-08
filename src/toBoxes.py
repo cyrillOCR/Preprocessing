@@ -19,13 +19,13 @@ img = cv2.imread(args["image"])
 h, w, _ = img.shape
 text = pytesseract.image_to_boxes(img, lang="rus").encode("utf-8")
 
-file = open("boxes.txt", mode="wb")
+file = open("boxes4.txt", mode="wb")
 file.write(text)
 file.close()
 
 boxes = []
 coords = []
-with open('boxes.txt', 'r', encoding="utf-8") as f:
+with open('boxes4.txt', 'r', encoding="utf-8") as f:
     reader = csv.reader(f, delimiter=' ')
     for row in reader:
         if len(row) == 6:
@@ -37,11 +37,11 @@ for b in boxes:
 
 print(coords)
 
-file = open("output.txt", mode="w+")
+file = open("output4.txt", mode="w+")
 file.write('\n'.join(str(e) for e in coords))
 file.close()
 
-cv2.imwrite("output.png", img)
+cv2.imwrite("output4.png", img)
 
 # cv2.imshow('output', img)
 
