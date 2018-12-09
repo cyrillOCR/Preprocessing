@@ -19,4 +19,15 @@ pip install opencv-python
 pip install argparse
 ```
 
+* pypdf2
+
+```python
+pip install PyPDF2
+```
+
+* pdf2image
+
+```python
+pip install pdf2image
+```
 
