@@ -1,22 +1,22 @@
 # Preprocessing
 Preprocessing module for cyrillOCR
 
-# Dependecies:
-pillow
-
+## Dependecies:
+* pillow
+```python
 pip install Pillow
+```
 
+* open-cv
 
-open-cv
-
-
+```python
 pip install opencv-python
+```
 
+* argparse
 
-argparse
-
-
+```python
 pip install argparse
-
+```
 
 
