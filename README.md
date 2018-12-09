@@ -1,7 +1,7 @@
 # Preprocessing
 Preprocessing module for cyrillOCR
 
-## Dependecies:
+## Dependencies:
 * pillow
 ```python
 pip install Pillow
