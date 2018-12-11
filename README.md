@@ -31,3 +31,15 @@ pip install PyPDF2
 pip install pdf2image
 ```
 
+* numpy 
+
+```python
+pip install numpy --user
+```
+
+* imageio 
+
+```python
+pip install imageio --user
+```
+
