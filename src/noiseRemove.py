@@ -4,12 +4,16 @@ import imageio
 import sys
 
 
-def remove_noise(image_file, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=200):
-    u = scientific_computing.zeros_like(image_file)
-    px = scientific_computing.zeros_like(image_file)
-    py = scientific_computing.zeros_like(image_file)
+def remove_noise(input_image_path, output_image_path, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=200):
+	
+    input_image_file = open_image(input_image_path)
+    input_image_file_array = get_array_from_image(input_image_file)
 
-    nm = scientific_computing.prod(image_file.shape[:2])
+    u = scientific_computing.zeros_like(input_image_file_array)
+    px = scientific_computing.zeros_like(input_image_file_array)
+    py = scientific_computing.zeros_like(input_image_file_array)
+
+    nm = scientific_computing.prod(input_image_file_array.shape[:2])
     tau = 0.125
 
     i = 0
@@ -33,7 +37,7 @@ def remove_noise(image_file, weight=0.1, epsilon=1e-3, maximum_number_of_iterati
         div_p = (px - rx) + (py - ry)
 
         # update image
-        u = image_file + weight * div_p
+        u = input_image_file_array + weight * div_p
 
         # calculate error
         error = scientific_computing.linalg.norm(u - u_old) / scientific_computing.sqrt(nm)
@@ -51,6 +55,8 @@ def remove_noise(image_file, weight=0.1, epsilon=1e-3, maximum_number_of_iterati
         # iterator increment
         i += 1
 
+    save_image(u, output_image_path)
+
     return u
 
 
@@ -63,13 +69,12 @@ def open_image(image_path):
 
 
 def save_image(modified_image_array, image_path):
-    image_path = image_path + 'result.png'
     imageio.imwrite(image_path, modified_image_array)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        print("Invalid number of arguments. Usage: noiseRemove.py input-image-path output-image-path (noise-weight)")
+    if len(sys.argv) > 4 or len(sys.argv) < 3:
+        print("Invalid number of arguments. Usage: noiseRemove.py input-image-path output-image-path [noise-weight]")
         exit(-1)
 
     file_path = sys.argv[1]
