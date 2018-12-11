@@ -4,12 +4,12 @@ import imageio
 import sys
 
 
-def remove_noise(image, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=200):
-    u = scientific_computing.zeros_like(image)
-    px = scientific_computing.zeros_like(image)
-    py = scientific_computing.zeros_like(image)
+def remove_noise(image_file, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=200):
+    u = scientific_computing.zeros_like(image_file)
+    px = scientific_computing.zeros_like(image_file)
+    py = scientific_computing.zeros_like(image_file)
 
-    nm = scientific_computing.prod(image.shape[:2])
+    nm = scientific_computing.prod(image_file.shape[:2])
     tau = 0.125
 
     i = 0
@@ -33,7 +33,7 @@ def remove_noise(image, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=2
         div_p = (px - rx) + (py - ry)
 
         # update image
-        u = image + weight * div_p
+        u = image_file + weight * div_p
 
         # calculate error
         error = scientific_computing.linalg.norm(u - u_old) / scientific_computing.sqrt(nm)
@@ -62,27 +62,26 @@ def open_image(image_path):
     return Image.open(image_path).convert("L")
 
 
-def save_image(image_array, image_path):
+def save_image(modified_image_array, image_path):
     image_path = image_path + 'result.png'
-    imageio.imwrite(image_path, image_array)
+    imageio.imwrite(image_path, modified_image_array)
 
 
-def main():
-    if len(sys.argv) != 3:
-        print("Invalid number of arguments. Usage: noiseRemove.py input-image-path noise-weight (output-image-save-path).")
+if __name__ == '__main__':
+    if len(sys.argv) < 4:
+        print("Invalid number of arguments. Usage: noiseRemove.py input-image-path output-image-path (noise-weight)")
         exit(-1)
+
     file_path = sys.argv[1]
-    noise_remove_weight = int(sys.argv[2])
+    file_save_path = sys.argv[2]
+
     if len(sys.argv) == 4:
-        file_save_path = sys.argv[3]
+        noise_remove_weight = int(sys.argv[3])
     else:
-        file_save_path = ""
+        noise_remove_weight = 65
 
-    image = open_image(file_path)
-    image_array = get_array_from_image(image)
-    modified_image_array = remove_noise(image_array, weight=noise_remove_weight)
-    save_image(modified_image_array, file_save_path)
-
-
-main()
+    unmodified_image = open_image(file_path)
+    image_array = get_array_from_image(unmodified_image)
+    noise_removed_image_array = remove_noise(image_array, weight=noise_remove_weight)
+    save_image(noise_removed_image_array, file_save_path)
 
