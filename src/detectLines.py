@@ -4,7 +4,7 @@ from math import pow
 from sys import argv
 
 
-def AdjustContrast(input_path,output_path):
+def DetectLines(input_path,output_path):
     inp = Image.open(input_path)
     out = Image.new( inp.mode, inp.size)
 
@@ -47,4 +47,4 @@ if __name__=='__main__':
 
     input_path = argv[1]
     output_path = argv[2]
-    AdjustContrast(input_path,output_path)
+    DetectLines(input_path,output_path)

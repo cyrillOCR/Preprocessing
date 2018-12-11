@@ -1,14 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.misc
-from skimage import color
-from skimage import io
-from skimage.io import imread
 from sys import argv
-from pprint import pprint
 from PIL import Image
-
-
 
 def denoise(img, output_path, weight=0.1, eps=1e-3, num_iter_max=200):
     u = np.zeros_like(img)
@@ -74,6 +67,6 @@ if __name__=='__main__':
         arr = np.asarray(image)
         denoise(arr,output_path,Weight)
     else:
-        print("Usage: toBlakcWhite.py inputFile outputFile")
+        print("Usage: noiseRemove.py inputFile outputFile")
         exit(0)
 

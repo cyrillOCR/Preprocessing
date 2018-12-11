@@ -4,6 +4,8 @@ from sys import argv
 import toGrayscale
 import contrastAdjustor
 import toBlackWhite
+import noiseRemove
+import detectLines
 
 if __name__ == '__main__':
     if (len(argv) < 3 or len(argv) > 4):
@@ -18,14 +20,22 @@ if __name__ == '__main__':
         contrastFactor = 1
     tempGrayscale = "tempG.jpg"
     tempContrast = "tempC.jpg"
+    tempNoise = "tempN.jpg"
+    tempBlackWhite = "tempBW.jpg"
+    tempDetectLine = "tempDetectLine.jpg"
 
     toGrayscale.ToGrayscale(input_path, tempGrayscale)
-    contrastAdjustor.AdjustContrast(tempGrayscale, tempContrast, contrastFactor)
-    toBlackWhite.ToBlackAndWhite(tempContrast, output_path)
+    noiseRemove.denoise(tempGrayscale,tempNoise,65)
+    contrastAdjustor.AdjustContrast(tempNoise, tempContrast, contrastFactor)
+    toBlackWhite.ToBlackAndWhite(tempContrast, tempBlackWhite)
+    detectLines.DetectLines(tempBlackWhite, output_path)
 
     # delete temp files
     if os.path.exists(tempGrayscale):
         os.remove(tempGrayscale)
-        if os.path.exists(tempContrast):
-            os.remove(tempContrast)
-
+        if os.path.exists(tempNoise):
+            os.remove(tempNoise)
+            if os.path.exists(tempContrast):
+                os.remove(tempContrast)
+                if os.path.exists(tempBlackWhite):
+                    os.remove(tempBlackWhite)
