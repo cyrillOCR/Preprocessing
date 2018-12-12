@@ -28,7 +28,7 @@ if __name__ == '__main__':
     noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
     contrastAdjustor.AdjustContrast(tempNoise, tempContrast, contrastFactor)
     toBlackWhite.ToBlackAndWhite(tempContrast, tempBlackWhite)
-    detectLines.DetectLines(tempBlackWhite, output_path)
+    linesCoord = detectLines.DetectLines(tempBlackWhite, output_path)
 
     # delete temp files
     if os.path.exists(tempGrayscale):

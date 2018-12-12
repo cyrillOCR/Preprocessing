@@ -100,6 +100,7 @@ def deleteSmallLines(pixelRowMarked):
             height = 0
     return pixelRowMarked
 
+# return a list of tuples for each line detected: (upper bound of line, lower bound of line)
 def DetectLines(input_path,output_path):
     inp = Image.open(input_path)
     out = Image.new( inp.mode, inp.size)
@@ -137,6 +138,24 @@ def DetectLines(input_path,output_path):
                 newPixels[i,j] = (255)
     out.show()
     out.save(output_path)
+
+    coord = list()
+    height = 0
+    up = 0
+    lw = 0
+    for i in range(len(pixelRowMarked)):
+        if pixelRowMarked[i] == 1:
+            if height == 0:
+                up = i
+            height += 1
+        else:
+            if height > 0:
+                lw = i - 1
+                coord.append((up,lw))
+            height = 0
+    print("Lines coordonates: ")
+    print(coord)
+    return coord
 
 
 if __name__=='__main__':
