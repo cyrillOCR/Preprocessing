@@ -25,7 +25,7 @@ if __name__ == '__main__':
     tempDetectLine = "tempDetectLine.jpg"
 
     toGrayscale.ToGrayscale(input_path, tempGrayscale)
-    noiseRemove.denoise(tempGrayscale,tempNoise,65)
+    noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
     contrastAdjustor.AdjustContrast(tempNoise, tempContrast, contrastFactor)
     toBlackWhite.ToBlackAndWhite(tempContrast, tempBlackWhite)
     detectLines.DetectLines(tempBlackWhite, output_path)
