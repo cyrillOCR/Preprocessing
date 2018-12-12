@@ -98,9 +98,7 @@ def removeRedundant():
 
 
 def write(file):
-    for r in result:
-        debug(r)
-        file.write(f"({r[0]}, {r[1]})\n({r[2]}, {r[3]})\n")
+    file.write(str(result))
 
 
 def fullFlood(lines, output_path):
