@@ -3,13 +3,19 @@ from PIL import Image
 from sys import argv
 
 
-def ToGrayscale(input_path,output_path):
+def ToGrayscaleFile(inputPath,outputPath):
     inp = Image.open(input_path)
-    out = Image.new( inp.mode, inp.size)
+    out = ToGrayscale(inp)
+    out.save(outputPath)
 
-    originalPixels = inp.load()
+
+def ToGrayscale(image):
+    inp = Image.open(input_path)
+    out = Image.new( image.mode, image.size)
+
+    originalPixels = image.load()
     newPixels = out.load()
-    width, height = inp.size
+    width, height = image.size
 
     for i in range(width):
         for j in range(height):
@@ -18,7 +24,7 @@ def ToGrayscale(input_path,output_path):
             newPixels[i,j] = (grayscaleValue,grayscaleValue,grayscaleValue)
     # decomment this to show result file
     #out.show()
-    out.save(output_path)
+    return out
 
 if __name__=='__main__':
     if(len(argv)!=3):
@@ -27,4 +33,4 @@ if __name__=='__main__':
 
     input_path = argv[1]
     output_path = argv[2]
-    ToGrayscale(input_path,output_path)
+    ToGrayscaleFile(input_path,output_path)

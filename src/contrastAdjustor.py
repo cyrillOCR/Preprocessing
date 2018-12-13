@@ -3,23 +3,27 @@ from PIL import Image
 from math import pow
 from sys import argv
 
-
-def AdjustContrast(input_path,output_path,contrastFactor):
+def AdjustContrastFile(inputPath,outputPath,contrastFactor):
     inp = Image.open(input_path)
-    out = Image.new( inp.mode, inp.size)
+    out = AdjustContrast(inp,contrastFactor)
+    out.save(outputPath)
 
-    originalPixels = inp.load()
+
+def AdjustContrast(image,contrastFactor):
+    out = Image.new( image.mode, image.size)
+
+    originalPixels = image.load()
     newPixels = out.load()
-    width, height = inp.size
+    width, height = image.size
 
     for i in range(width):
         for j in range(height):
-            grayscaleValue = int(originalPixels[i,j])
+            grayscaleValue = int(originalPixels[i,j][0])
             contrastValue = int(pow(float(grayscaleValue)*2.0/255.0,contrastFactor)/2.0*255.0)
-            newPixels[i,j] = (contrastValue)
+            newPixels[i,j] = (contrastValue,contrastValue,contrastValue)
     # decomment this to show result file
     # out.show()
-    out.save(output_path)
+    return out
 
 if __name__=='__main__':
     if(len(argv)!=4):
@@ -29,4 +33,4 @@ if __name__=='__main__':
     input_path = argv[1]
     output_path = argv[2]
     contrastFactor = float(argv[3])
-    AdjustContrast(input_path,output_path,contrastFactor)
+    AdjustContrastFile(input_path,output_path,contrastFactor)

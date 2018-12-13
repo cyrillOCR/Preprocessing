@@ -6,6 +6,7 @@ import contrastAdjustor
 import toBlackWhite
 import noiseRemove
 import detectLines
+from utilities import FileToImage, ImageToFile
 
 if __name__ == '__main__':
     if (len(argv) < 3 or len(argv) > 4):
@@ -24,10 +25,15 @@ if __name__ == '__main__':
     tempBlackWhite = "tempBW.jpg"
     tempDetectLine = "tempDetectLine.jpg"
 
-    toGrayscale.ToGrayscale(input_path, tempGrayscale)
+    originalImage = FileToImage(input_path)
+    originalImage = toGrayscale.ToGrayscale(originalImage)
+    ImageToFile(originalImage,tempGrayscale)
+
+    abosoluteImage = contrastAdjustor.AdjustContrast(originalImage,contrastFactor)
+    abosoluteImage = toBlackWhite.ToBlackAndWhite(abosoluteImage)
+    ImageToFile(originalImage,tempBlackWhite)
+
     noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
-    contrastAdjustor.AdjustContrast(tempNoise, tempContrast, contrastFactor)
-    toBlackWhite.ToBlackAndWhite(tempContrast, tempBlackWhite)
     linesCoord = detectLines.DetectLines(tempBlackWhite, output_path)
 
     # delete temp files

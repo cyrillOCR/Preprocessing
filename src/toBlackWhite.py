@@ -3,24 +3,29 @@ from PIL import Image
 from sys import argv
 
 
-
-def ToBlackAndWhite(input_path,output_path):
+def ToBlackAndWhiteFile(inputPath,outputPath):
     inp = Image.open(input_path)
-    out = Image.new( inp.mode, inp.size)
+    out = ToBlackAndWhite(inp)
+    out.save(outputPath)
 
-    originalPixels = inp.load()
+
+
+def ToBlackAndWhite(image):
+    out = Image.new( image.mode, image.size)
+
+    originalPixels = image.load()
     newPixels = out.load()
-    width, height = inp.size
+    width, height = image.size
 
     for i in range(width):
         for j in range(height):
-            if(originalPixels[i,j]<127):
-                newPixels[i,j] = (0)
+            if(originalPixels[i,j][0]<127):
+                newPixels[i,j] = (0,0,0)
             else:
-                newPixels[i,j] = (255)
+                newPixels[i,j] = (255,255,255)
     # decomment this to show result file
     # out.show()
-    out.save(output_path)
+    return out
 
 if __name__=='__main__':
     if(len(argv)!=3):
@@ -29,4 +34,4 @@ if __name__=='__main__':
 
     input_path = argv[1]
     output_path = argv[2]
-    ToBlackAndWhite(input_path,output_path)
+    ToBlackAndWhiteFile(input_path,output_path)
