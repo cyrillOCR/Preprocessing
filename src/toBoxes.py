@@ -13,6 +13,10 @@ minH = sys.maxsize
 result = list()
 
 
+def getW(x):
+    return x[0]
+
+
 def debug(original_image):
     img = cv2.imread(original_image)
     for x in result:
@@ -98,6 +102,19 @@ def removeRedundant():
         result.remove(i)
 
 
+def connectClose(rectangles, lineHeight):
+    toRemove = list()
+    for i in rectangles:
+        for j in rectangles:
+            if i[1] > j[3] and i[3] > j[3] and j[0] < (i[0] + i[2]) / 2 < j[2] and i[3] - j[1] < lineHeight:
+                toRemove.append(i)
+                toRemove.append(j)
+                rectangles.append((min(i[0], j[0]), min(i[1], j[1]), max(i[2], j[2]), max(i[3], j[3])))
+
+    for i in toRemove:
+        rectangles.remove(i)
+
+
 def write(file):
     file.write(str(result))
 
@@ -105,14 +122,18 @@ def write(file):
 def fullFlood(lines):
     # file = open(output_path, "w+")
     for line in lines:
+        lineBoxes = list()
         for i in range(width):
             for j in range(line[0], line[1]):
                 flood(j, i)
                 if minH < sys.maxsize:
-                    result.append((minW, minH, maxW, maxH))
+                    lineBoxes.append((minW, minH, maxW, maxH))
                     resetHW()
+        connectClose(lineBoxes, line[1] - line[0])
+        lineBoxes.sort(key=getW)
+        result.extend(lineBoxes)
     removeRedundant()
-    # write(file)  # remove if you dont want a file
+    # write(file)  # remove if you don`t want a file
     return result
 
 
@@ -137,4 +158,5 @@ if __name__ == '__main__':
     GetPixels(Image.open(input_path))
     output = fullFlood(coordLines)
     print(len(output), "boxes:", output)
+    debug(input_path)
     #
