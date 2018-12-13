@@ -6,12 +6,16 @@ import contrastAdjustor
 import toBlackWhite
 import noiseRemove
 import detectLines
+import toBoxes
+import sys
 from utilities import FileToImage, ImageToFile
 
 if __name__ == '__main__':
     if (len(argv) < 3 or len(argv) > 4):
         print("Usage: toBlakcWhite.py inputFile outputFile [contrastFactor]")
         exit(0)
+
+    sys.setrecursionlimit(sys.maxsize)
 
     input_path = argv[1]
     output_path = argv[2]
@@ -35,6 +39,12 @@ if __name__ == '__main__':
 
     _, linesCoord = detectLines.DetectLines(absoluteImage)
     print(linesCoord)
+
+    toBoxes.GetPixels(absoluteImage)
+    output = toBoxes.fullFlood(linesCoord)
+    print(len(output), "boxes:", output)
+
+    toBoxes.debug(input_path) # remove this if you don't want an image with the rectangles
     # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files

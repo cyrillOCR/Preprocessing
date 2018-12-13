@@ -13,9 +13,11 @@ minH = sys.maxsize
 result = list()
 
 
-def debug(x):
-    global img
-    cv2.rectangle(img, (x[0], x[1]), (x[2], x[3]), (255, 0, 0), 2)
+def debug(original_image):
+    img = cv2.imread(original_image)
+    for x in result:
+        cv2.rectangle(img, (x[0], x[1]), (x[2], x[3]), (255, 0, 0), 2)
+    cv2.imwrite("output_boxes.png", img)
 
 
 def resetHW():
@@ -100,8 +102,8 @@ def write(file):
     file.write(str(result))
 
 
-def fullFlood(lines, output_path):
-    file = open(output_path, "w+")
+def fullFlood(lines):
+    # file = open(output_path, "w+")
     for line in lines:
         for i in range(width):
             for j in range(line[0], line[1]):
@@ -110,7 +112,7 @@ def fullFlood(lines, output_path):
                     result.append((minW, minH, maxW, maxH))
                     resetHW()
     removeRedundant()
-    write(file)  # remove if you dont want a file
+    # write(file)  # remove if you dont want a file
     return result
 
 
@@ -131,14 +133,8 @@ if __name__ == '__main__':
     for line in range(0, len(lines), 2):
         coordLines.append((int(lines[line]), int(lines[line + 1])))
 
-    # debug
-    img = cv2.imread(input_path)
-
     #
     GetPixels(Image.open(input_path))
-    output = fullFlood(coordLines, output_path)
+    output = fullFlood(coordLines)
     print(len(output), "boxes:", output)
     #
-
-    # debug
-    cv2.imwrite("output_boxes.png", img)
