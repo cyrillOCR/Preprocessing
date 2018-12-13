@@ -1,6 +1,5 @@
 import sys
 from sys import argv
-
 import cv2
 from PIL import Image
 
@@ -66,12 +65,12 @@ def flood(x, y):
         flood(x, y + 1)
 
 
-def GetPixels(input_path):
+def GetPixels(inp):
     global width
     global height
     global pixels
 
-    inp = Image.open(input_path)
+    # inp = Image.open(input_path)
     imgPixels = inp.load()
     width, height = inp.size
     pixels = [[0] * width for i in range(height)]
@@ -111,7 +110,8 @@ def fullFlood(lines, output_path):
                     result.append((minW, minH, maxW, maxH))
                     resetHW()
     removeRedundant()
-    write(file)
+    write(file)  # remove if you dont want a file
+    return result
 
 
 if __name__ == '__main__':
@@ -124,7 +124,6 @@ if __name__ == '__main__':
     input_path = argv[1]
     lines_path = argv[2]
     output_path = argv[3]
-    GetPixels(input_path)
 
     file = open(lines_path)
     lines = file.readlines()
@@ -135,7 +134,11 @@ if __name__ == '__main__':
     # debug
     img = cv2.imread(input_path)
 
-    fullFlood(coordLines, output_path)
+    #
+    GetPixels(Image.open(input_path))
+    output = fullFlood(coordLines, output_path)
+    print(len(output), "boxes:", output)
+    #
 
     # debug
     cv2.imwrite("output_boxes.png", img)
