@@ -18,7 +18,7 @@ if __name__ == '__main__':
     if (len(argv) == 2):
         contrastFactor = argv[3]
     else:
-        contrastFactor = 1
+        contrastFactor = 1.5
     tempGrayscale = "tempG.jpg"
     tempContrast = "tempC.jpg"
     tempNoise = "tempN.jpg"
@@ -27,14 +27,15 @@ if __name__ == '__main__':
 
     originalImage = FileToImage(input_path)
     originalImage = toGrayscale.ToGrayscale(originalImage)
-    ImageToFile(originalImage,tempGrayscale)
+    ImageToFile(originalImage, tempGrayscale)
 
-    abosoluteImage = contrastAdjustor.AdjustContrast(originalImage,contrastFactor)
-    abosoluteImage = toBlackWhite.ToBlackAndWhite(abosoluteImage)
-    ImageToFile(originalImage,tempBlackWhite)
+    absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
+    absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+    ImageToFile(absoluteImage, tempBlackWhite)
 
-    noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
-    linesCoord = detectLines.DetectLines(tempBlackWhite, output_path)
+    _, linesCoord = detectLines.DetectLines(absoluteImage)
+    print(linesCoord)
+    # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files
     if os.path.exists(tempGrayscale):

@@ -10,7 +10,6 @@ def ToGrayscaleFile(inputPath,outputPath):
 
 
 def ToGrayscale(image):
-    inp = Image.open(input_path)
     out = Image.new( image.mode, image.size)
 
     originalPixels = image.load()
