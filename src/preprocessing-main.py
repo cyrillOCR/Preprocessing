@@ -1,5 +1,6 @@
 import os
 from sys import argv
+import time
 
 import toGrayscale
 import contrastAdjustor
@@ -11,23 +12,25 @@ import sys
 from utilities import FileToImage, ImageToFile
 
 if __name__ == '__main__':
-    if (len(argv) < 3 or len(argv) > 4):
-        print("Usage: toBlakcWhite.py inputFile outputFile [contrastFactor]")
+    if (len(argv) < 2 or len(argv) > 3):
+        print("Usage: toBlakcWhite.py inputFile [contrastFactor]")
         exit(0)
 
     sys.setrecursionlimit(sys.maxsize)
 
     input_path = argv[1]
-    output_path = argv[2]
-    if (len(argv) == 2):
-        contrastFactor = argv[3]
+    if (len(argv) == 3):
+        contrastFactor = argv[2]
     else:
         contrastFactor = 1.5
-    tempGrayscale = "tempG.jpg"
-    tempContrast = "tempC.jpg"
-    tempNoise = "tempN.jpg"
-    tempBlackWhite = "tempBW.jpg"
-    tempDetectLine = "tempDetectLine.jpg"
+
+    id = int(round(time.time() * 1000))
+    tempGrayscale = str(id) + "_tempG.jpg"
+    tempContrast = str(id) + "_tempC.jpg"
+    tempNoise = str(id) + "_tempN.jpg"
+    tempBlackWhite = str(id) + "_tempBW.jpg"
+    tempDetectLine = str(id) + "_tempDetectLine.jpg"
+
 
     originalImage = FileToImage(input_path)
     originalImage = toGrayscale.ToGrayscale(originalImage)
@@ -37,12 +40,25 @@ if __name__ == '__main__':
     absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
     ImageToFile(absoluteImage, tempBlackWhite)
 
-    _, linesCoord = detectLines.DetectLines(absoluteImage)
+    lines, linesCoord = detectLines.DetectLines(absoluteImage)
     print(linesCoord)
+    ImageToFile(lines, tempDetectLine)
 
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
     print(len(output), "boxes:", output)
+    f = open("i5.txt","w+")
+    for b in output:
+        f.write("(")
+        f.write(str(b[0]))
+        f.write(", ")
+        f.write(str(b[1]))
+        f.write(", ")
+        f.write(str(b[2]))
+        f.write(", ")
+        f.write(str(b[3]))
+        f.write(")\n")
+    f.close()
 
     toBoxes.debug(input_path) # remove this if you don't want an image with the rectangles
     # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)

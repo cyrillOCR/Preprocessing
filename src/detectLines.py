@@ -39,16 +39,12 @@ def getMedianDistanceBetweenLines(pixelRowMarked):
         else:
             height += 1
     spaceHeight.sort()
-    # print("Inaltimi spatii:")
-    # print(spaceHeight)
     return spaceHeight[int(len(spaceHeight) / 2)]
 
 
 def combineSmallLines(pixelRowMarked):
     averageHeight = getAverageLineHeight(pixelRowMarked)
     spaceMedianHeight = getMedianDistanceBetweenLines(pixelRowMarked)
-    # print("Inaltime medie linie " + str(averageHeight))
-    # print("Mediana spatiu dintre linii " + str(spaceMedianHeight))
     height = 0
     l = len(pixelRowMarked)
     i = 0
@@ -110,6 +106,12 @@ def DetectLinesFile(inputPath, outputPath):
     out, coords = DetectLines(inp)
     out.save(outputPath)
     print(coords)
+    f = open("lines.txt","w+")
+    for c in coords:
+        f.write(str(c[0]))
+        f.write("\n")
+        f.write(str(c[1]))
+        f.write("\n")
 
 
 # return a list of tuples for each line detected: (upper bound of line, lower bound of line)
@@ -161,8 +163,6 @@ def DetectLines(inp):
                 lw = i - 1
                 coord.append((up, lw))
             height = 0
-    # print("Lines coordonates: ")
-    # print(coord)
     return out, coord
 
 
