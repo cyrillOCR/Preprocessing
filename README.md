@@ -43,7 +43,7 @@ pip install numpy --user
 pip install imageio --user
 ```
 
-## Microservices
+## Microservices:
 The module offers two microservices that responds to POST method:
 
 * One for processing a PDF
@@ -55,6 +55,7 @@ INPUT:
   payload: string,
   contrastFactor: int,
   applyNoiseReduction: bool,
+  noiseReductionFactor: int,
   segmentationFactor: int
 }
 ```
@@ -62,7 +63,7 @@ INPUT:
   
   ContrastFactor has a default value of 1.5 and it is between 1 and 3. It represents the ration between the text color intensity and the background color intensity.
   
-  ApplyNoiseReduction can be false or true, by default it is false. If set, it reduces the noise of the image, but doubles the execution time.
+  ApplyNoiseReduction can be false or true, by default it is false. If set, it reduces the noise of the image, but doubles the execution time. High NoiseReductionFactor value can cause blur.
   
   SegmentationFactor is between 0.3 and 0.7. Higher value reduce the risk of characters placed on consecutive lines to be selected togheter, but increases the chances to exclude detection of characters such "'" or dot of the "i".
   
@@ -71,10 +72,12 @@ OUTPUT:
 {
   names: string[],
   payloads: string[],
+  pName: string,
+  pPayload: string
   coords: int[][]
 }
 ```
-  It returns the names of the resulted images with their content. The first image of the list is preprocessed(back-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
+  It returns the names of the resulted images with their content from the PDF. Pname is the name of the first image which is preprocessed(back-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
 
 
 
@@ -87,6 +90,7 @@ INPUT:
   payload: string,
   contrastFactor: int,
   applyNoiseReduction: bool,
+  noiseReductionFactor: int,
   segmentationFactor: int
 }
 ```
