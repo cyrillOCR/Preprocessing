@@ -105,16 +105,22 @@ def removeRedundant():
 
 def connectClose(rectangles, lineHeight):
     toRemove = list()
+    cont = False
     for i in rectangles:
         for j in rectangles:
-            if i[1] > j[3] and i[3] > j[3] and j[0] < (i[0] + i[2]) / 2 < j[2] and i[3] - j[1] < lineHeight:
-                toRemove.append(i)
-                toRemove.append(j)
+            if i == j:
+                continue
+            if i[1] > j[3]-70 and i[3] > j[3]-70 and i[0] < (j[0] + j[2]) / 2 < i[2] and max(i[3], j[3]) - min(i[1], j[1]) < lineHeight*1.5:
+                #toRemove.append(i)
+                #toRemove.append(j)
+                rectangles.remove(i)
+                rectangles.remove(j)
+                cont = True
                 rectangles.append((min(i[0], j[0]), min(i[1], j[1]), max(i[2], j[2]), max(i[3], j[3])))
-
-    for i in toRemove:
-        if i in rectangles:
-            rectangles.remove(i)
+                break
+        if cont:
+            cont = False
+            continue
 
 
 def write(file):
@@ -131,8 +137,10 @@ def fullFlood(lines):
                 if minH < sys.maxsize:
                     lineBoxes.append((minW, minH, maxW, maxH))
                     resetHW()
+        lineBoxes = list(set(lineBoxes))
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
+        #print(lineBoxes)
         result.extend(lineBoxes)
     removeRedundant()
     # write(file)  # remove if you don`t want a file
