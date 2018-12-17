@@ -52,14 +52,14 @@ INPUT:
 ```
 {
   name: string,
-  payload: binary,
+  payload: string,
   contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
   segmentationFactor: float
 }
 ```
-  The name is the name of the PDF and the payload is PDF's content. The next 3 parameters are optional. 
+  The name is the name of the PDF and the payload is PDF's content encoded in base64. The next 3 parameters are optional. 
   
   ContrastFactor has a default value of 1.5 and it is between 1 and 3. It represents the ration between the text color intensity and the background color intensity.
   
@@ -71,13 +71,13 @@ OUTPUT:
 ```
 {
   names: string[],
-  payloads: binary[],
+  payloads: string[],
   pName: string,
-  pPayload: binary
+  pPayload: string
   coords: int[][]
 }
 ```
-  It returns the names of the resulted images with their content from the PDF. Pname is the name of the first image which is preprocessed(back-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
+  It returns the names of the resulted images with their content from the PDF encoded in base64. Pname is the name of the first image which is preprocessed(back-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
 
 
 
@@ -87,7 +87,7 @@ INPUT:
 ```
 {
   name: string,
-  payload: binary,
+  payload: string,
   contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
@@ -95,18 +95,18 @@ INPUT:
 }
 ```
 
-The name is the name of the image and the payload is images's content. The next 3 parameters are optional and are explained above. 
+The name is the name of the image and the payload is images's content encoded in base64. The next 3 parameters are optional and are explained above. 
 
 OUTPUT:
 ```
 {
   name: string,
-  payload: binary,
+  payload: string,
   coords: int[][]
 }
 ```
 
-It returns the name of the preprocessed image and it's content in black-white. The coords is a list of points which represents the bordes of each character detected.
+It returns the name of the preprocessed image and it's content in black-white encoded in base64. The coords is a list of points which represents the bordes of each character detected.
 
   
 
