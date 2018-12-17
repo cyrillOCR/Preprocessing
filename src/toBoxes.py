@@ -38,7 +38,7 @@ def resetHW():
 def inMatrix(x, y):
     global width
     global height
-    if y < 0 or x < 0 or y > width or x > height:
+    if y < 0 or x < 0 or y >= width or x >= height:
         return False
     return True
 
@@ -99,7 +99,8 @@ def removeRedundant():
                 toRemove.append(j)
 
     for i in toRemove:
-        result.remove(i)
+    	if i in result:
+        	result.remove(i)
 
 
 def connectClose(rectangles, lineHeight):
@@ -112,7 +113,8 @@ def connectClose(rectangles, lineHeight):
                 rectangles.append((min(i[0], j[0]), min(i[1], j[1]), max(i[2], j[2]), max(i[3], j[3])))
 
     for i in toRemove:
-        rectangles.remove(i)
+    	if i in rectangles:
+        	rectangles.remove(i)
 
 
 def write(file):
