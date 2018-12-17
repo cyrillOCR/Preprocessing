@@ -111,7 +111,7 @@ It returns the name of the preprocessed image and it's content in black-white. T
   
 
 ## Installing a flask server for Python 3, using Windows
-* The easy way:
+### The easy way:
   1. Install & open Pycharm
   2. Create a new project
   3. Select Flask
@@ -122,7 +122,7 @@ It returns the name of the preprocessed image and it's content in black-white. T
   8. Run
   9. Consult the documentation to learn : http://flask.pocoo.org/docs/1.0/tutorial/
   
-* The harder way
+### The harder way
   1. Create a folder for the Flask server
   2. Open CMD
   3. Go to the created folder using ```cd```
