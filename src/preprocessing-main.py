@@ -12,17 +12,21 @@ import sys
 from utilities import FileToImage, ImageToFile
 
 if __name__ == '__main__':
-    if (len(argv) < 2 or len(argv) > 3):
-        print("Usage: toBlakcWhite.py inputFile [contrastFactor]")
+    if (len(argv) < 2 or len(argv) > 4):
+        print("Usage: toBlakcWhite.py inputFile [contrastFactor] [segmentationFactor]")
         exit(0)
 
     sys.setrecursionlimit(sys.maxsize)
 
     input_path = argv[1]
     if (len(argv) == 3):
-        contrastFactor = argv[2]
+        contrastFactor = float(argv[2])
     else:
         contrastFactor = 1.5
+        if len(argv) == 4:
+            segmentationFactor = float(argv[3])
+        else:
+            segmentationFactor = 0.45
 
     id = int(round(time.time() * 1000))
     tempGrayscale = str(id) + "_tempG.jpg"
@@ -40,7 +44,7 @@ if __name__ == '__main__':
     absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
     ImageToFile(absoluteImage, tempBlackWhite)
 
-    lines, linesCoord = detectLines.DetectLines(absoluteImage)
+    lines, linesCoord = detectLines.DetectLines(absoluteImage, segmentationFactor)
     print(linesCoord)
     ImageToFile(lines, tempDetectLine)
 
@@ -70,5 +74,3 @@ if __name__ == '__main__':
             os.remove(tempNoise)
             if os.path.exists(tempContrast):
                 os.remove(tempContrast)
-                if os.path.exists(tempBlackWhite):
-                    os.remove(tempBlackWhite)

@@ -24,8 +24,8 @@ def getAverageLineHeight(pixelRowMarked):
     return average / nrLines
 
 
-def getMinPixelsAllowed(average, width):
-    return 0.45 * average
+def getMinPixelsAllowed(average, segmentationFactor):
+    return segmentationFactor * average
 
 
 def getMedianDistanceBetweenLines(pixelRowMarked):
@@ -101,9 +101,9 @@ def deleteSmallLines(pixelRowMarked):
     return pixelRowMarked
 
 
-def DetectLinesFile(inputPath, outputPath):
+def DetectLinesFile(inputPath, outputPath, segmentationFactor):
     inp = Image.open(inputPath)
-    out, coords = DetectLines(inp)
+    out, coords = DetectLines(inp, segmentationFactor)
     out.save(outputPath)
     print(coords)
     f = open("lines.txt","w+")
@@ -115,7 +115,7 @@ def DetectLinesFile(inputPath, outputPath):
 
 
 # return a list of tuples for each line detected: (upper bound of line, lower bound of line)
-def DetectLines(inp):
+def DetectLines(inp, segmentationFactor):
     out = Image.new(inp.mode, inp.size)
 
     originalPixels = inp.load()
@@ -134,7 +134,7 @@ def DetectLines(inp):
 
     average = getAveragePixelsPerLine(pixelRowSum)
     for i in range(len(pixelRowSum)):
-        if (pixelRowSum[i] > getMinPixelsAllowed(average, width)):
+        if (pixelRowSum[i] > getMinPixelsAllowed(average, segmentationFactor)):
             pixelRowMarked.append(1)
         else:
             pixelRowMarked.append(0)
