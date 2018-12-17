@@ -109,4 +109,38 @@ OUTPUT:
 It returns the name of the preprocessed image and it's content in black-white. The coords is a list of points which represents the bordes of each character detected.
 
   
+
+## Installing a flask server for Python 3, using Windows
+### The easy way:
+  1. Install & open Pycharm
+  2. Create a new project
+  3. Select Flask
+  4. Open Project Interpreter
+  5. New environment using Virtualenv
+  6. Go to settings -> Project: __ProjectName__
+  7. Add the required dependencies
+  8. Run
+  9. Consult the documentation to learn : http://flask.pocoo.org/docs/1.0/tutorial/
   
+### The harder way
+  1. Create a folder for the Flask server
+  2. Open CMD
+  3. Go to the created folder using ```cd```
+  4. Create a new virtual environment ```py -m venv venv```
+  5. Activate the virtual environment ```venv\Scripts\activate```
+  6. Install Flask ```py -m pip install Flask```
+  7. Create a file ```app.py``` in the root of the project with this content:
+  ```
+  from flask import Flask
+  app = Flask(__name__)
+  @app.route('/')
+  def hello():
+      return 'Hello, World!'
+  if(__name__=='__main__'):
+	  app.run()
+  ```
+  8. Run ```app.py``` with Python
+  9. To run again after you close the cmd, you need to redo the steps 2,3,5,8
+  10. To install modules/packages you need to have the virtual envionment actiavated
+  11. Consult the documentation to learn : http://flask.pocoo.org/docs/1.0/tutorial/
+
