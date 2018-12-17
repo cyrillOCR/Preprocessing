@@ -16,7 +16,7 @@ if __name__ == '__main__':
         print("Usage: toBlakcWhite.py inputFile [contrastFactor] [segmentationFactor]")
         exit(0)
 
-    sys.setrecursionlimit(sys.maxsize)
+    sys.setrecursionlimit(2000000)
 
     input_path = argv[1]
     if (len(argv) == 3):

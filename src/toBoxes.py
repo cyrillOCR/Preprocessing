@@ -99,8 +99,8 @@ def removeRedundant():
                 toRemove.append(j)
 
     for i in toRemove:
-    	if i in result:
-        	result.remove(i)
+        if i in result:
+            result.remove(i)
 
 
 def connectClose(rectangles, lineHeight):
@@ -113,8 +113,8 @@ def connectClose(rectangles, lineHeight):
                 rectangles.append((min(i[0], j[0]), min(i[1], j[1]), max(i[2], j[2]), max(i[3], j[3])))
 
     for i in toRemove:
-    	if i in rectangles:
-        	rectangles.remove(i)
+        if i in rectangles:
+            rectangles.remove(i)
 
 
 def write(file):
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         print("Usage: [].py inputFile inputLines outputFile")
         exit(0)
 
-    sys.setrecursionlimit(sys.maxsize)  # what do you mean CPU? and RAM?! pfff
+    sys.setrecursionlimit(2000000)  # what do you mean CPU? and RAM?! pfff
 
     input_path = argv[1]
     lines_path = argv[2]
