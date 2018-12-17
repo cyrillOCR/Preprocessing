@@ -44,7 +44,7 @@ pip install imageio --user
 ```
 
 ## Microservices:
-The module offers two microservices that responds to POST method:
+The module offers two microservices that responds with ```multipart/form-data``` to ```POST``` request with ```multipart/form-data``` header:
 
 * One for processing a PDF
 
@@ -52,7 +52,7 @@ INPUT:
 ```
 {
   name: string,
-  payload: string,
+  payload: binary,
   contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
@@ -71,9 +71,9 @@ OUTPUT:
 ```
 {
   names: string[],
-  payloads: string[],
+  payloads: binary[],
   pName: string,
-  pPayload: string
+  pPayload: binary
   coords: int[][]
 }
 ```
@@ -87,7 +87,7 @@ INPUT:
 ```
 {
   name: string,
-  payload: string,
+  payload: binary,
   contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
@@ -101,7 +101,7 @@ OUTPUT:
 ```
 {
   name: string,
-  payload: string,
+  payload: binary,
   coords: int[][]
 }
 ```
