@@ -53,10 +53,10 @@ INPUT:
 {
   name: string,
   payload: string,
-  contrastFactor: int,
+  contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
-  segmentationFactor: int
+  segmentationFactor: float
 }
 ```
   The name is the name of the PDF and the payload is PDF's content. The next 3 parameters are optional. 
@@ -88,10 +88,10 @@ INPUT:
 {
   name: string,
   payload: string,
-  contrastFactor: int,
+  contrastFactor: float,
   applyNoiseReduction: bool,
   noiseReductionFactor: int,
-  segmentationFactor: int
+  segmentationFactor: float
 }
 ```
 
