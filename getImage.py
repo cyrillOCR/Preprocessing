@@ -1,8 +1,7 @@
 import base64
-from flask import Flask, json, send_from_directory, url_for, request, jsonify
-import os
-from PIL import Image
 from io import BytesIO
+from PIL import Image
+from flask import Flask, request, jsonify
 
 from src import contrastAdjustor, noiseRemove, detectLines
 
