@@ -9,7 +9,7 @@ from src import contrastAdjustor, noiseRemove, detectLines
 app = Flask(__name__)
 
 
-@app.route('/multipart/form-data', methods=['PoST'])
+@app.route('/multipart/form-data', methods=['POST'])
 def addImage():
     name = request.json['name']
     payload = request.json['payload']
