@@ -4,7 +4,7 @@ from math import pow
 from sys import argv
 
 def AdjustContrastFile(inputPath,outputPath,contrastFactor):
-    inp = Image.open(input_path)
+    inp = Image.open(inputPath)
     out = AdjustContrast(inp,contrastFactor)
     out.save(outputPath)
 
