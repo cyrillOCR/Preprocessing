@@ -48,9 +48,10 @@ if __name__ == '__main__':
     print(linesCoord)
     ImageToFile(lines, tempDetectLine)
 
+    toBoxes.prepareDebug(input_path) # remove this if you don't want an image with the rectangles
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
-    print(len(output), "boxes:", output)
+    # print(len(output), "boxes:", output)
     f = open("i5.txt","w+")
     for b in output:
         f.write("(")
@@ -64,7 +65,8 @@ if __name__ == '__main__':
         f.write(")\n")
     f.close()
 
-    toBoxes.debug(input_path) # remove this if you don't want an image with the rectangles
+    
+    toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
     # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files

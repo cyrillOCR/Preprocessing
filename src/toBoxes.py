@@ -1,3 +1,4 @@
+import random
 import sys
 from sys import argv
 import cv2
@@ -17,11 +18,20 @@ def getW(x):
     return x[0]
 
 
-def debug(original_image):
-    img = cv2.imread(original_image)
-    for x in result:
-        cv2.rectangle(img, (x[0], x[1]), (x[2], x[3]), (255, 0, 0), 2)
-    cv2.imwrite("output_boxes.png", img)
+def writeDebugImg():
+    global debugImg
+    cv2.imwrite("output_boxes.png", debugImg)
+
+
+def addToDebug(rectList):
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    for x in rectList:
+        cv2.rectangle(debugImg, (x[0], x[1]), (x[2], x[3]), color, 2)
+
+
+def prepareDebug(original_image):
+    global debugImg
+    debugImg = cv2.imread(original_image)
 
 
 def resetHW():
@@ -91,10 +101,10 @@ def isCompletlyIn(x, y):
     return x[0] < y[0] and x[1] < y[1] and x[2] > y[2] and x[3] > y[3]
 
 
-def removeRedundant():
+def removeRedundant(rectangles):
     toRemove = list()
-    for i in result:
-        for j in result:
+    for i in rectangles:
+        for j in rectangles:
             if isCompletlyIn(i, j):
                 toRemove.append(j)
 
@@ -104,15 +114,15 @@ def removeRedundant():
 
 
 def connectClose(rectangles, lineHeight):
-    toRemove = list()
     cont = False
     for i in rectangles:
         for j in rectangles:
             if i == j:
                 continue
-            if i[1] > j[3]-70 and i[3] > j[3]-70 and i[0] < (j[0] + j[2]) / 2 < i[2] and max(i[3], j[3]) - min(i[1], j[1]) < lineHeight*1.5:
-                #toRemove.append(i)
-                #toRemove.append(j)
+            if i[1] > j[3] - lineHeight / 2 and i[3] > j[3] - lineHeight / 2 and i[0] < (j[0] + j[2]) / 2 < i[2] \
+                    and max(i[3], j[3]) - min(i[1], j[1]) < lineHeight * 1.5:
+                # toRemove.append(i)
+                # toRemove.append(j)
                 rectangles.remove(i)
                 rectangles.remove(j)
                 cont = True
@@ -129,20 +139,27 @@ def write(file):
 
 def fullFlood(lines):
     # file = open(output_path, "w+")
-    for line in lines:
+    nextBoxes = list()
+    for line, nextLine in zip(lines, lines[1:] + [(0, 0)]):
         lineBoxes = list()
+        lineBoxes.extend(nextBoxes)
+        nextBoxes = list()
         for i in range(width):
             for j in range(line[0], line[1]):
                 flood(j, i)
                 if minH < sys.maxsize:
-                    lineBoxes.append((minW, minH, maxW, maxH))
+                    if line[1] - minH > maxH - nextLine[0] or nextLine == (0, 0):
+                        lineBoxes.append((minW, minH, maxW, maxH))
+                    else:
+                        nextBoxes.append((minW, minH, maxW, maxH))
                     resetHW()
         lineBoxes = list(set(lineBoxes))
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
-        #print(lineBoxes)
+        removeRedundant(lineBoxes)
+        addToDebug(lineBoxes)
+        print(len(lineBoxes))
         result.extend(lineBoxes)
-    removeRedundant()
     # write(file)  # remove if you don`t want a file
     return result
 
@@ -165,8 +182,9 @@ if __name__ == '__main__':
         coordLines.append((int(lines[line]), int(lines[line + 1])))
 
     #
+    prepareDebug(input_path)
     GetPixels(Image.open(input_path))
     output = fullFlood(coordLines)
+    writeDebugImg()
     print(len(output), "boxes:", output)
-    debug(input_path)
     #
