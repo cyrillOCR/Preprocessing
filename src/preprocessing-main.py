@@ -35,10 +35,12 @@ if __name__ == '__main__':
     tempBlackWhite = str(id) + "_tempBW.jpg"
     tempDetectLine = str(id) + "_tempDetectLine.jpg"
 
-
     originalImage = FileToImage(input_path)
     originalImage = toGrayscale.ToGrayscale(originalImage)
     ImageToFile(originalImage, tempGrayscale)
+
+    originalImage = noiseRemove.remove_unwanted_pixels(originalImage, 0.25)
+    ImageToFile(originalImage, tempNoise)
 
     absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
     absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)

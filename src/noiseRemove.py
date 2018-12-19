@@ -1,92 +1,163 @@
-from PIL import Image
-import numpy as scientific_computing
-import imageio
+from PIL import Image, ImageFilter, ImageOps
+from threading import Thread
 import sys
+import imageio
+import numpy
+import time
 
 
-def remove_noise(input_image_path, output_image_path, weight=0.1, epsilon=1e-3, maximum_number_of_iterations=200):
-	
-    input_image_file = open_image(input_image_path)
-    input_image_file_array = get_array_from_image(input_image_file)
+def split_image(image_path):
 
-    u = scientific_computing.zeros_like(input_image_file_array)
-    px = scientific_computing.zeros_like(input_image_file_array)
-    py = scientific_computing.zeros_like(input_image_file_array)
+    image = Image.open(image_path).convert("L")
 
-    nm = scientific_computing.prod(input_image_file_array.shape[:2])
-    tau = 0.125
+    image_array = get_array_from_image(image)
+    width, height = image.size
 
-    i = 0
-    while i < maximum_number_of_iterations:
-        u_old = u
+    first_half_array = numpy.zeros((int(height / 2), width))
 
-        # x and y components of u's gradient
-        ux = scientific_computing.roll(u, -1, axis=1) - u
-        uy = scientific_computing.roll(u, -1, axis=0) - u
+    for i in range(int(height / 2)):
+        for j in range(width):
+            first_half_array[i, j] = image_array[i, j]
 
-        # update the dual variable
-        px_new = px + (tau / weight) * ux
-        py_new = py + (tau / weight) * uy
-        norm_new = scientific_computing.maximum(1, scientific_computing.sqrt(px_new ** 2 + py_new ** 2))
-        px = px_new / norm_new
-        py = py_new / norm_new
+    second_half_array = numpy.zeros((int(height / 2), width))
 
-        # calculate divergence
-        rx = scientific_computing.roll(px, 1, axis=1)
-        ry = scientific_computing.roll(py, 1, axis=0)
-        div_p = (px - rx) + (py - ry)
+    for i in range(int(height / 2), height):
+        for j in range(width):
+            second_half_array[int(height / 2) + 1 - i, j] = image_array[i, j]
 
-        # update image
-        u = input_image_file_array + weight * div_p
+    return first_half_array, second_half_array, width, height
 
-        # calculate error
-        error = scientific_computing.linalg.norm(u - u_old) / scientific_computing.sqrt(nm)
 
-        if i == 0:
-            err_init = error
-            err_prev = error
-        else:
-            # if error is small enough break
-            if scientific_computing.abs(err_prev - error) < epsilon * err_init:
-                break
-            else:
-                err_prev = error
+def reconstruct_image_as_array(first_half_array, second_half_array, columns, rows):
 
-        # iterator increment
-        i += 1
+    image_array = numpy.zeros((rows, columns))
 
-    save_image(u, output_image_path)
+    for i in range(int(rows / 2)):
+        for j in range(columns):
+            image_array[i, j] = first_half_array[i, j]
 
-    return u
+    for i in range(int(rows / 2), rows):
+        for j in range(columns):
+            image_array[i, j] = second_half_array[int(rows / 2) + 1 - i, j]
+
+    return image_array
+
+
+def get_image_from_array(image_array):
+
+    image = Image.fromarray(image_array)
+    return image
 
 
 def get_array_from_image(image):
-    return scientific_computing.asarray(image)
+
+    image_array = numpy.asarray(image)
+    return image_array
 
 
-def open_image(image_path):
-    return Image.open(image_path).convert("L")
+def save_image(output_image_name, image_array):
+
+    imageio.imwrite(output_image_name, image_array)
 
 
-def save_image(modified_image_array, image_path):
-    imageio.imwrite(image_path, modified_image_array)
+def median_filter(image, result, index):
+
+    width, height = image.size
+
+    filtered_image = image.copy()
+
+    members = [(0, 0)] * 9
+
+    for x in range(1, width - 1):
+        for y in range(1, height - 1):
+
+            members[0] = image.getpixel((x - 1, y - 1))
+            members[1] = image.getpixel((x - 1, y))
+            members[2] = image.getpixel((x - 1, y + 1))
+            members[3] = image.getpixel((x, y - 1))
+            members[4] = image.getpixel((x, y))
+            members[5] = image.getpixel((x, y + 1))
+            members[6] = image.getpixel((x + 1, y - 1))
+            members[7] = image.getpixel((x + 1, y))
+            members[8] = image.getpixel((x + 1, y + 1))
+
+            members.sort()
+
+            filtered_image.putpixel((x - 1, y - 1), (members[4]))
+
+    filtered_image.show()
+
+    # result[index] = filtered_image
+
+
+def process_image_threads(image_path):
+
+    threads = [None] * 2
+    results = [None] * 2
+    image_split = [None] * 2
+
+    first_half_array, second_half_array, width, height = split_image(image_path)
+
+    image_split[0] = get_image_from_array(first_half_array)
+    image_split[1] = get_image_from_array(second_half_array)
+
+    for i in range(0, len(threads)):
+        threads[i] = Thread(target=median_filter, args=(image_split[i], results, i))
+        threads[i].start()
+
+    for i in range(0, len(threads)):
+        threads[i].join()
+
+    first_half_array = get_array_from_image(results[0])
+    second_half_array = get_array_from_image(results[1])
+
+    final_image_array = reconstruct_image_as_array(first_half_array, second_half_array, width, height)
+    save_image("output_image.jpg", final_image_array)
+
+
+def remove_unwanted_pixels(image, frequency):
+
+    list_of_colors = image.getcolors()
+    pixels = image.load()
+    list_of_colors = sorted(list_of_colors, key=lambda x: x[0], reverse=True)
+
+    width, height = image.size
+
+    selected_colors = [x[1] for x in list_of_colors[0:int(len(list_of_colors) * frequency)]]
+
+    # print(selected_colors)
+
+    for x in range(1, width):
+        for y in range(1, height):
+            if pixels[x, y] in selected_colors:
+                pixels[x, y] = (255, 255, 255)
+
+    return image
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 4 or len(sys.argv) < 3:
-        print("Invalid number of arguments. Usage: noiseRemove.py input-image-path output-image-path [noise-weight]")
-        exit(-1)
+    start_time = time.time()
 
-    file_path = sys.argv[1]
-    file_save_path = sys.argv[2]
-
-    if len(sys.argv) == 4:
-        noise_remove_weight = int(sys.argv[3])
+    if len(sys.argv) > 3 or len(sys.argv) < 2:
+        print("Check your parameters! Usage: python <source.py> <image_path> <weight>")
     else:
-        noise_remove_weight = 65
+        image = Image.open(sys.argv[1])
+        if len(sys.argv) == 2:
+            remove_unwanted_pixels(image, 0.25)
+        else:
+            remove_unwanted_pixels(image, float(sys.argv[2]))
 
-    unmodified_image = open_image(file_path)
-    image_array = get_array_from_image(unmodified_image)
-    noise_removed_image_array = remove_noise(image_array, weight=noise_remove_weight)
-    save_image(noise_removed_image_array, file_save_path)
+        ''' 
+        image = Image.open("no_noise_part_1.jpg")
 
+        inverted_image = ImageOps.invert(image)
+        dilation_img = inverted_image.filter(ImageFilter.MaxFilter(3))
+        erosion_img = dilation_img.filter(ImageFilter.MinFilter(5))
+        erosion_img = ImageOps.invert(erosion_img)
+
+        erosion_img.show()
+
+        # process_image_threads("no_noise_part_1.jpg")
+        # median_filter(image, None, None)
+        '''
+    print("Execution completed in %s seconds." % (time.time() - start_time))
