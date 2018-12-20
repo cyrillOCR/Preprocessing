@@ -102,7 +102,7 @@ def addImage():
         f.write(")\n")
     f.close()
 
-    toBoxes.debug(inputPath)
+    #toBoxes.debug(inputPath)
 
     if applyNoiseReduction:
         noiseRemove.remove_noise(tempGrayscale, tempNoise, int(noiseReductionFactor))
@@ -126,4 +126,4 @@ def addImage():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host= '0.0.0.0')
