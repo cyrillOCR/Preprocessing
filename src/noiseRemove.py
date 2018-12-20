@@ -6,9 +6,9 @@ import numpy
 import time
 
 
-def split_image(image_path):
+def split_image(image):
 
-    image = Image.open(image_path).convert("L")
+    image = image.convert("L")
 
     image_array = get_array_from_image(image)
     width, height = image.size
@@ -90,7 +90,7 @@ def median_filter(image, result, index):
     # result[index] = filtered_image
 
 
-def process_image_threads(image_path):
+def median_filter_threads(image_path):
 
     threads = [None] * 2
     results = [None] * 2
@@ -115,24 +115,54 @@ def process_image_threads(image_path):
     save_image("output_image.jpg", final_image_array)
 
 
-def remove_unwanted_pixels(image, frequency):
+def remove_unwanted_pixels_threads(image, weight=0.25):
+
+    threads = [None] * 2
+    results = [None] * 2
+    image_split = [None] * 2
+
+    first_half_array, second_half_array, width, height = split_image(image)
+
+    image_split[0] = get_image_from_array(first_half_array)
+    image_split[1] = get_image_from_array(second_half_array)
+
+    image_split[0].show()
+
+    for i in range(0, len(threads)):
+        threads[i] = Thread(target=remove_unwanted_pixels, args=(image_split[i], weight, results, i))
+        threads[i].start()
+
+    for i in range(0, len(threads)):
+        threads[i].join()
+
+    first_half_array = get_array_from_image(results[0])
+    second_half_array = get_array_from_image(results[1])
+
+    final_image_array = reconstruct_image_as_array(first_half_array, second_half_array, width, height)
+    final_image = get_image_from_array(final_image_array)
+
+    final_image.show()
+
+
+def remove_unwanted_pixels(image, frequency, result_object, thread_index):
 
     list_of_colors = image.getcolors()
     pixels = image.load()
+
     list_of_colors = sorted(list_of_colors, key=lambda x: x[0], reverse=True)
 
     width, height = image.size
 
     selected_colors = [x[1] for x in list_of_colors[0:int(len(list_of_colors) * frequency)]]
 
-    # print(selected_colors)
-
     for x in range(1, width):
         for y in range(1, height):
             if pixels[x, y] in selected_colors:
                 pixels[x, y] = (255, 255, 255)
 
-    return image
+    image.show()
+
+    # result_object[thread_index] = image
 
 
 if __name__ == '__main__':
@@ -141,11 +171,14 @@ if __name__ == '__main__':
     if len(sys.argv) > 3 or len(sys.argv) < 2:
         print("Check your parameters! Usage: python <source.py> <image_path> <weight>")
     else:
+
         image = Image.open(sys.argv[1])
+
         if len(sys.argv) == 2:
-            remove_unwanted_pixels(image, 0.25)
+            remove_unwanted_pixels_threads(image, 0.25)
+            # remove_unwanted_pixels(image, 0.25, None, None)
         else:
-            remove_unwanted_pixels(image, float(sys.argv[2]))
+            remove_unwanted_pixels_threads(image, float(sys.argv[2]))
 
         ''' 
         image = Image.open("no_noise_part_1.jpg")
