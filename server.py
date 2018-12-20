@@ -114,7 +114,7 @@ def addImage():
             if os.path.exists(tempContrast):
                 os.remove(tempContrast)
 
-    newPayload = base64.b16encode(open(tempBlackWhite, "rb").read())
+    newPayload = base64.b64encode(open(tempBlackWhite, "rb").read())
     # newPayload = base64.b16encode(absoluteImage)
 
     data = {
