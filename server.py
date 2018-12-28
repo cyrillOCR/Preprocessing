@@ -1,11 +1,12 @@
 import base64
 import os
 import time
+import sys
 from io import BytesIO
 from PIL import Image
 from flask import Flask, request, jsonify
 import json
-from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities
+from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
@@ -13,7 +14,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello world"
+    return "Hello world boss"
 
 
 @app.route('/addImage', methods=['GET'])
@@ -40,32 +41,11 @@ def addImage():
         os.remove(inputPath)
 
     image = Image.open(BytesIO(base64.b64decode(payload)))
+
+    # aici se face resize la imagine
+    # TREBUIE SA PRIMEASCA image si sa returneze tot o imagine in variabila image
+
     image.save(inputPath)
-    # image.show()
-    #
-    # image = toGrayscale.ToGrayscale(image)
-    # # ImageToFile(image, tempGrayscale)
-    #
-    # if contrastFactor:
-    #     contrastAdjustor.AdjustContrast(image, float(contrastFactor))
-    #     toBlackWhite.ToBlackAndWhite(image)
-    #     # ImageToFile(absImage, tempBlackWhite) /
-    #
-    # if applyNoiseReduction:
-    #     noiseImage = noiseRemove.remove_noise(inputPath, outputPath, int(noiseReductionFactor))
-    #
-    #
-    #
-    # # coords = detectLines.DetectLinesFile(inputPath, outputPath, float(segmentationFactor))
-    #
-    # lines, linesCoord = detectLines.DetectLines(open(outputPath), float(segmentationFactor))
-    # print(linesCoord)
-    # # ImageToFile(lines, tempDetectLine)
-    #
-    # toBoxes.GetPixels(open(outputPath))
-    # output = toBoxes.fullFlood(linesCoord)
-    # print(len(output), "Boxes:", output)
-    #
 
     id = int(round(time.time() * 1000))
     tempGrayscale = str(id) + "_tempG.png"
@@ -76,36 +56,25 @@ def addImage():
 
     originalImage = FileToImage(inputPath)
     originalImage = toGrayscale.ToGrayscale(originalImage)
-    ImageToFile(originalImage, tempGrayscale)
+    #ImageToFile(originalImage, tempGrayscale)
 
     absoluteImage = contrastAdjustor.AdjustContrast(originalImage, float(contrastFactor))
+
+    # aici se proceseaza noise-ul
+    # TREBUIE SA PRIMEASCA absoluteImage si sa returneze imaginea tot in variabila absoluteImage
+    if applyNoiseReduction:
+        noiseRemove.remove_noise(tempGrayscale, tempNoise, int(noiseReductionFactor))
+
     absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
     ImageToFile(absoluteImage, tempBlackWhite)
 
     lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentationFactor))
-    print(linesCoord)
-    ImageToFile(lines, tempDetectLine)
+    #print(linesCoord)
+    #ImageToFile(lines, tempDetectLine)
 
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
     print(len(output), "boxes:", output)
-    f = open("i5.txt", "w+")
-    for b in output:
-        f.write("(")
-        f.write(str(b[0]))
-        f.write(", ")
-        f.write(str(b[1]))
-        f.write(", ")
-        f.write(str(b[2]))
-        f.write(", ")
-        f.write(str(b[3]))
-        f.write(")\n")
-    f.close()
-
-    #toBoxes.debug(inputPath)
-
-    if applyNoiseReduction:
-        noiseRemove.remove_noise(tempGrayscale, tempNoise, int(noiseReductionFactor))
 
     if os.path.exists(tempGrayscale):
         os.remove(tempGrayscale)
@@ -126,4 +95,5 @@ def addImage():
 
 
 if __name__ == '__main__':
+    sys.setrecursionlimit(2000000)
     app.run(host= '0.0.0.0')
