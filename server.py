@@ -63,7 +63,7 @@ def addImage():
     # aici se proceseaza noise-ul
     # TREBUIE SA PRIMEASCA absoluteImage si sa returneze imaginea tot in variabila absoluteImage
     if applyNoiseReduction:
-        noiseRemove.remove_noise(tempGrayscale, tempNoise, int(noiseReductionFactor))
+        absoluteImage = noiseRemove.remove_noise(absoluteImage)
 
     absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
     ImageToFile(absoluteImage, tempBlackWhite)
