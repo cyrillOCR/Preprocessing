@@ -16,7 +16,7 @@ from src import convertPDF2img, toGrayscale, utilities, noiseRemove, toBlackWhit
 app = Flask(__name__)
 
 
-@app.route('multipart/form-data', methods=['POST'])
+@app.route('/multipart/form-data', methods=['POST'])
 def convert_pdf_to_image():
 
     pdf_file_name = request.json['name']
