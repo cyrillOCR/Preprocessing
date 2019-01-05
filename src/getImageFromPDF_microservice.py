@@ -19,13 +19,15 @@ app = Flask(__name__)
 @app.route('/multipart/form-data', methods=['POST'])
 def convert_pdf_to_image():
 
+    # print(request.data)  # To check what you are sending
+
     pdf_file_name = request.json['name']
     pdf_encoded_content = request.json['payload']
-    contrast_factor = request.json['contrastFactor']
+    # contrast_factor = request.json['contrastFactor']
     apply_noise_reduction = request.json['applyNoiseReduction']
     segmentation_factor = request.json['segmentationFactor']
 
-    in_memory_pdf_file = BytesIO(base64.b64decode(pdf_encoded_content))
+    in_memory_pdf_file = base64.b64decode(pdf_encoded_content)
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
     images_uid_prefix = str(uuid.uuid4())
