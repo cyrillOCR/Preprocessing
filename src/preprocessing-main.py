@@ -7,7 +7,9 @@ import contrastAdjustor
 import toBlackWhite
 import noiseRemove
 import detectLines
+import resizeImage
 import toBoxes
+import dilation
 import sys
 from utilities import FileToImage, ImageToFile
 
@@ -34,14 +36,22 @@ if __name__ == '__main__':
     tempNoise = str(id) + "_tempN.jpg"
     tempBlackWhite = str(id) + "_tempBW.jpg"
     tempDetectLine = str(id) + "_tempDetectLine.jpg"
+    tempDilation = str(id) + "_tempDilation.jpg"
 
 
     originalImage = FileToImage(input_path)
+    originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
+    #ImageToFile(originalImage, "img.jpg")
+    #originalImage = FileToImage("img.jpg")
     originalImage = toGrayscale.ToGrayscale(originalImage)
     ImageToFile(originalImage, tempGrayscale)
+    originalImage = dilation.dilation(originalImage)
+    originalImage = dilation.erosion(originalImage)
+    ImageToFile(originalImage,tempDilation)
 
-    absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
-    absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+    #absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
+    #absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+    absoluteImage = noiseRemove.remove_noise(originalImage)
     ImageToFile(absoluteImage, tempBlackWhite)
 
     lines, linesCoord = detectLines.DetectLines(absoluteImage, segmentationFactor)
@@ -52,21 +62,21 @@ if __name__ == '__main__':
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
     # print(len(output), "boxes:", output)
-    f = open("i5.txt","w+")
-    for b in output:
-        f.write("(")
-        f.write(str(b[0]))
-        f.write(", ")
-        f.write(str(b[1]))
-        f.write(", ")
-        f.write(str(b[2]))
-        f.write(", ")
-        f.write(str(b[3]))
-        f.write(")\n")
-    f.close()
+    # f = open("i5.txt","w+")
+    # for b in output:
+    #     f.write("(")
+    #     f.write(str(b[0]))
+    #     f.write(", ")
+    #     f.write(str(b[1]))
+    #     f.write(", ")
+    #     f.write(str(b[2]))
+    #     f.write(", ")
+    #     f.write(str(b[3]))
+    #     f.write(")\n")
+    # f.close()
 
     
-    toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
+    #toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
     # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files
