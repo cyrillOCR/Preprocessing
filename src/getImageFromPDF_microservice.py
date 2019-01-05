@@ -10,7 +10,7 @@ import base64
 
 import os
 
-from src import convertPDF2img, toGrayscale, utilities, noiseRemove, toBlackWhite, detectLines, toBoxes
+import convertPDF2img, toGrayscale, utilities, noiseRemove, toBlackWhite, detectLines, toBoxes
 
 
 app = Flask(__name__)
