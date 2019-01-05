@@ -133,6 +133,25 @@ def connectClose(rectangles, lineHeight):
             continue
 
 
+def connect_very_close(rectangles):
+    error_margin = 3
+    cont = False
+    for i in rectangles:
+        for j in rectangles:
+            if i == j:
+                continue
+            if abs(i[2] - j[0]) <= error_margin or (  # W
+                    abs(i[3] - j[1]) <= error_margin and j[0] + j[2] - i[0] + i[2] < 5):  # H
+                rectangles.remove(i)
+                rectangles.remove(j)
+                cont = True
+                rectangles.append((min(i[0], j[0]), min(i[1], j[1]), max(i[2], j[2]), max(i[3], j[3])))
+                break
+        if cont:
+            cont = False
+            continue
+
+
 def write(file):
     file.write(str(result))
 
@@ -154,7 +173,7 @@ def fullFlood(lines):
             for j in range(line[0], line[1]):
                 flood(j, i)
                 if minH < sys.maxsize:
-                    if calc_area((minW, minH, maxW, maxH)) >= 20:
+                    if calc_area((minW, minH, maxW, maxH)) >= height * width * 0.0000074:
                         if line[1] - minH > maxH - nextLine[0] or nextLine == (0, 0):
                             lineBoxes.append((minW, minH, maxW, maxH))
                         else:
@@ -164,6 +183,8 @@ def fullFlood(lines):
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
         removeRedundant(lineBoxes)
+        connect_very_close(lineBoxes)
+        lineBoxes.sort(key=getW)
         addToDebug(lineBoxes)
         print(len(lineBoxes))
         result.extend(lineBoxes)
