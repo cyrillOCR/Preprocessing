@@ -58,7 +58,7 @@ if __name__ == '__main__':
     print(linesCoord)
     ImageToFile(lines, tempDetectLine)
 
-    toBoxes.prepareDebug(input_path) # remove this if you don't want an image with the rectangles
+    toBoxes.prepareDebug(tempBlackWhite) # remove this if you don't want an image with the rectangles
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
     # print(len(output), "boxes:", output)
