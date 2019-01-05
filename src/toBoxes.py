@@ -137,6 +137,12 @@ def write(file):
     file.write(str(result))
 
 
+def calc_area(points):
+    l1 = points[2] - points[0]
+    l2 = points[3] - points[1]
+    return l1 * l2
+
+
 def fullFlood(lines):
     # file = open(output_path, "w+")
     nextBoxes = list()
@@ -148,10 +154,11 @@ def fullFlood(lines):
             for j in range(line[0], line[1]):
                 flood(j, i)
                 if minH < sys.maxsize:
-                    if line[1] - minH > maxH - nextLine[0] or nextLine == (0, 0):
-                        lineBoxes.append((minW, minH, maxW, maxH))
-                    else:
-                        nextBoxes.append((minW, minH, maxW, maxH))
+                    if calc_area((minW, minH, maxW, maxH)) >= 20:
+                        if line[1] - minH > maxH - nextLine[0] or nextLine == (0, 0):
+                            lineBoxes.append((minW, minH, maxW, maxH))
+                        else:
+                            nextBoxes.append((minW, minH, maxW, maxH))
                     resetHW()
         lineBoxes = list(set(lineBoxes))
         connectClose(lineBoxes, line[1] - line[0])
