@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # f.close()
 
     
-    #toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
+    toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
     # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files

@@ -157,7 +157,7 @@ def fullFlood(lines):
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
         removeRedundant(lineBoxes)
-        #addToDebug(lineBoxes)
+        addToDebug(lineBoxes)
         print(len(lineBoxes))
         result.extend(lineBoxes)
     # write(file)  # remove if you don`t want a file
