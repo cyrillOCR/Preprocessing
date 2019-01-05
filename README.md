@@ -63,7 +63,7 @@ INPUT:
   
   ContrastFactor has a default value of 1.5 and it is between 1 and 3. It represents the ration between the text color intensity and the background color intensity.
   
-  ApplyNoiseReduction can be false or true, by default it is false. If set, it reduces the noise of the image, but doubles the execution time. High NoiseReductionFactor value can cause blur.
+  ApplyNoiseReduction can be false or true, by default it is false. If set, it totally removes the noise of the image, making it sharp and clear but increases the execution time.
   
   SegmentationFactor is between 0.3 and 0.7. Higher value reduce the risk of characters placed on consecutive lines to be selected togheter, but increases the chances to exclude detection of characters such "'" or dot of the "i".
   
