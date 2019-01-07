@@ -109,8 +109,10 @@ def removeRedundant(rectangles):
                 toRemove.append(j)
 
     for i in toRemove:
-        if i in result:
-            result.remove(i)
+        if i in rectangles:
+            rectangles.remove(i)
+
+    return rectangles
 
 
 def connectClose(rectangles, lineHeight):
@@ -182,12 +184,13 @@ def fullFlood(lines):
         lineBoxes = list(set(lineBoxes))
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
-        removeRedundant(lineBoxes)
         connect_very_close(lineBoxes)
+        removeRedundant(lineBoxes)
         lineBoxes.sort(key=getW)
         addToDebug(lineBoxes)
         print(len(lineBoxes))
         result.extend(lineBoxes)
+
     # write(file)  # remove if you don`t want a file
     return result
 

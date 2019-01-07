@@ -62,18 +62,18 @@ if __name__ == '__main__':
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord)
     # print(len(output), "boxes:", output)
-    # f = open("i5.txt","w+")
-    # for b in output:
-    #     f.write("(")
-    #     f.write(str(b[0]))
-    #     f.write(", ")
-    #     f.write(str(b[1]))
-    #     f.write(", ")
-    #     f.write(str(b[2]))
-    #     f.write(", ")
-    #     f.write(str(b[3]))
-    #     f.write(")\n")
-    # f.close()
+    f = open("i5.txt","w+")
+    for b in output:
+         f.write("(")
+         f.write(str(b[0]))
+         f.write(", ")
+         f.write(str(b[1]))
+         f.write(", ")
+         f.write(str(b[2]))
+         f.write(", ")
+         f.write(str(b[3]))
+         f.write(")\n")
+    f.close()
 
     
     toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
