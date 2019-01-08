@@ -135,8 +135,8 @@ def connectClose(rectangles, lineHeight):
             continue
 
 
-def connect_very_close(rectangles):
-    error_margin = 3
+def connect_very_close(rectangles, charDistance):
+    error_margin = charDistance
     cont = False
     for i in rectangles:
         for j in rectangles:
@@ -164,7 +164,7 @@ def calc_area(points):
     return l1 * l2
 
 
-def fullFlood(lines):
+def fullFlood(lines, charDistance = 3):
     # file = open(output_path, "w+")
     nextBoxes = list()
     for line, nextLine in zip(lines, lines[1:] + [(0, 0)]):
@@ -184,7 +184,7 @@ def fullFlood(lines):
         lineBoxes = list(set(lineBoxes))
         connectClose(lineBoxes, line[1] - line[0])
         lineBoxes.sort(key=getW)
-        connect_very_close(lineBoxes)
+        connect_very_close(lineBoxes, charDistance)
         removeRedundant(lineBoxes)
         lineBoxes.sort(key=getW)
         addToDebug(lineBoxes)

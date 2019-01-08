@@ -40,29 +40,40 @@ if __name__ == '__main__':
 
 
     originalImage = FileToImage(input_path)
+    startTime = time.time()
     originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
-    #ImageToFile(originalImage, "img.jpg")
-    #originalImage = FileToImage("img.jpg")
+    resizeTime = time.time()
+    print("Time to resize ", resizeTime - startTime, " seconds")
+
     originalImage = toGrayscale.ToGrayscale(originalImage)
-    ImageToFile(originalImage, tempGrayscale)
-    originalImage = dilation.dilation(originalImage)
-    originalImage = dilation.erosion(originalImage)
-    ImageToFile(originalImage,tempDilation)
+    grayscaleTime = time.time()
+    print("Time to grayscale ", grayscaleTime - resizeTime, " seconds")
+
+    #originalImage = dilation.dilation(originalImage)
+    #originalImage = dilation.erosion(originalImage)
+    dilationTime = time.time()
+    print("Time to dilation and erosion ", dilationTime - grayscaleTime, " seconds")
 
     #absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
     #absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
     absoluteImage = noiseRemove.remove_noise(originalImage)
+    noiseTime = time.time()
+    print("Time to remove noise ", noiseTime - dilationTime, " seconds")
     ImageToFile(absoluteImage, tempBlackWhite)
 
+    afterSaveTime = time.time()
     lines, linesCoord = detectLines.DetectLines(absoluteImage, segmentationFactor)
-    print(linesCoord)
+    linesTime = time.time()
+    print("Time to detect lines ", linesTime - afterSaveTime, " seconds")
     ImageToFile(lines, tempDetectLine)
 
     toBoxes.prepareDebug(tempBlackWhite) # remove this if you don't want an image with the rectangles
     toBoxes.GetPixels(absoluteImage)
-    output = toBoxes.fullFlood(linesCoord)
+    output = toBoxes.fullFlood(linesCoord, 3)
+    boxesTime = time.time()
+    print("Time to get boxes ", boxesTime - linesTime, " seconds")
     # print(len(output), "boxes:", output)
-    f = open("i5.txt","w+")
+    f = open("box-p10-n.txt","w+")
     for b in output:
          f.write("(")
          f.write(str(b[0]))
@@ -77,7 +88,6 @@ if __name__ == '__main__':
 
     
     toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
-    # noiseRemove.remove_noise(tempGrayscale, tempNoise, 65)
 
     # delete temp files
     if os.path.exists(tempGrayscale):
@@ -86,3 +96,6 @@ if __name__ == '__main__':
             os.remove(tempNoise)
             if os.path.exists(tempContrast):
                 os.remove(tempContrast)
+
+    finalTime = time.time()
+    print('Execution time with debuging is ', finalTime - startTime, ' seconds')
