@@ -100,6 +100,7 @@ INPUT:
   separationFactor: int
 }
 ```
+The contrastFactor parameter is used to apply a certain amount of contrast to the image. It is an exponential function, so the default value is one if you want the contrast to be unchanged. A subunitary value will decrease the contrast, while a supraunitary value will increase the contrast of the image. Usually a value between 1.5 and 3.0 is recommended. In our test cased we used 2.0.
 
 The name is the name of the image and the payload is images's content encoded in base64. The next 3 parameters are optional and are explained above. 
 
