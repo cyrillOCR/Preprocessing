@@ -56,7 +56,6 @@ INPUT:
   contrastFactor: float,
   applyDilation: bool,
   applyNoiseReduction: bool,
-  noiseReductionFactor: int,
   segmentationFactor: float,
   separationFactor: int
 }
@@ -97,7 +96,6 @@ INPUT:
   contrastFactor: float,
   applyDilation: bool,
   applyNoiseReduction: bool,
-  noiseReductionFactor: int,
   segmentationFactor: float,
   separationFactor: int
 }
