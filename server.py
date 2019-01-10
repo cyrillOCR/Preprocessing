@@ -7,11 +7,14 @@ from PIL import Image
 from flask import Flask, request, jsonify
 import json
 import uuid
+
+from flask_cors import CORS
+
 from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, dilation, convertPDF2img
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def hello():
@@ -23,7 +26,7 @@ def get():
     return "Post only"
 
 
-@app.route('/addImage', methods=['POST'])
+@app.route('/addImage', methods=['POST', 'OPTIONS'])
 def addImage():
     sys.setrecursionlimit(2000000)
     name = request.json['name']
@@ -95,7 +98,7 @@ def addImage():
     return json.dumps(data)
 
 
-@app.route('/addPdf', methods=['POST'])
+@app.route('/addPdf', methods=['POST', 'OPTIONS'])
 def convert_pdf_to_image():
     sys.setrecursionlimit(2000000)
 
