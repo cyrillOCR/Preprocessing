@@ -8,13 +8,10 @@ from flask import Flask, request, jsonify
 import json
 import uuid
 
-from flask_cors import CORS
-
 from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, dilation, convertPDF2img
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
-CORS(app)
 
 @app.route('/')
 def hello():
@@ -95,7 +92,11 @@ def addImage():
         "payload": str(newPayload),
         "coords": output
     }
-    return json.dumps(data)
+    #return json.dumps(data)
+    return jsonify(json.dumps(data)), 200 , {
+        'Acces-Control-Allow-Origin': '*',
+        'Acces-Control-Allow-Headers': 'Content-Type',
+        }
 
 
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])
@@ -172,7 +173,11 @@ def convert_pdf_to_image():
         'coords': coordinates
     }
 
-    return json.dumps(return_data)
+    #return json.dumps(return_data)
+    return jsonify(json.dumps(return_data)), 200 , {
+            'Acces-Control-Allow-Origin': '*',
+            'Acces-Control-Allow-Headers': 'Content-Type',
+            }
 
 
 if __name__ == '__main__':
