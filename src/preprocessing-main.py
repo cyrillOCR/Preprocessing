@@ -14,21 +14,23 @@ import sys
 from utilities import FileToImage, ImageToFile
 
 if __name__ == '__main__':
-    if (len(argv) < 2 or len(argv) > 4):
-        print("Usage: toBlakcWhite.py inputFile [contrastFactor] [segmentationFactor]")
+    if (len(argv) < 2 or len(argv) > 7):
+        print("Usage: mainPreprocessing.py inputFile contrastFactor applyDilation applyNoiseRemove segmentationFactor separationFactor")
         exit(0)
 
     sys.setrecursionlimit(2000000)
-
     input_path = argv[1]
-    if (len(argv) == 3):
+    contrastFactor = 1.5
+    applyDilation = True
+    applyNoiseRemove = True
+    segmentationFactor = 0.45
+    separationFactor = 3
+    if (len(argv) == 7):
         contrastFactor = float(argv[2])
-    else:
-        contrastFactor = 1.5
-        if len(argv) == 4:
-            segmentationFactor = float(argv[3])
-        else:
-            segmentationFactor = 0.45
+        applyDilation = int(argv[3])
+        applyNoiseRemove = int(argv[4])
+        segmentationFactor = float(argv[5])
+        separationFactor = int(argv[6])
 
     id = int(round(time.time() * 1000))
     tempGrayscale = str(id) + "_tempG.jpg"
@@ -49,29 +51,37 @@ if __name__ == '__main__':
     grayscaleTime = time.time()
     print("Time to grayscale ", grayscaleTime - resizeTime, " seconds")
 
-    #originalImage = dilation.dilation(originalImage)
-    #originalImage = dilation.erosion(originalImage)
-    dilationTime = time.time()
-    print("Time to dilation and erosion ", dilationTime - grayscaleTime, " seconds")
+    if applyDilation == 1:
+        originalImage = dilation.dilation(originalImage)
+        originalImage = dilation.erosion(originalImage)
+        dilationTime = time.time()
+        print("Time to dilation and erosion ", dilationTime - grayscaleTime, " seconds")
 
-    #absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
-    #absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
-    absoluteImage = noiseRemove.remove_noise(originalImage)
-    noiseTime = time.time()
-    print("Time to remove noise ", noiseTime - dilationTime, " seconds")
+    if applyNoiseRemove == 1:
+        absoluteImage = noiseRemove.remove_noise(originalImage)
+        noiseTime = time.time()
+        print("Time to remove noise ", noiseTime - dilationTime, " seconds")
+    else:
+        absoluteImage = contrastAdjustor.AdjustContrast(originalImage, contrastFactor)
+        absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+        contrastAndBlackTime = time.time()
+        print("Time to constrast adjust and to convert to blackWhite ", contrastAndBlackTime - dilationTime, " seconds")
+
     ImageToFile(absoluteImage, tempBlackWhite)
 
     afterSaveTime = time.time()
     lines, linesCoord = detectLines.DetectLines(absoluteImage, segmentationFactor)
     linesTime = time.time()
     print("Time to detect lines ", linesTime - afterSaveTime, " seconds")
-    ImageToFile(lines, tempDetectLine)
+    #ImageToFile(lines, tempDetectLine)
 
     toBoxes.prepareDebug(tempBlackWhite) # remove this if you don't want an image with the rectangles
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord, 3)
     boxesTime = time.time()
     print("Time to get boxes ", boxesTime - linesTime, " seconds")
+
+
     # print(len(output), "boxes:", output)
     f = open("box-p10-n.txt","w+")
     for b in output:
@@ -85,8 +95,6 @@ if __name__ == '__main__':
          f.write(str(b[3]))
          f.write(")\n")
     f.close()
-
-    
     toBoxes.writeDebugImg() # remove this if you don't want an image with the rectangles
 
     # delete temp files
