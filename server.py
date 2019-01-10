@@ -6,7 +6,8 @@ from io import BytesIO
 from PIL import Image
 from flask import Flask, request, jsonify
 import json
-from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, dilation
+import uuid
+from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, dilation, convertPDF2img
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
@@ -43,9 +44,6 @@ def addImage():
         os.remove(inputPath)
 
     image = Image.open(BytesIO(base64.b64decode(payload)))
-
-    # aici se face resize la imagine
-    # TREBUIE SA PRIMEASCA image si sa returneze tot o imagine in variabila image
 
     image.save(inputPath)
 
@@ -95,6 +93,83 @@ def addImage():
         "coords": output
     }
     return json.dumps(data)
+
+
+@app.route('/addPdf', methods=['POST'])
+def convert_pdf_to_image():
+    sys.setrecursionlimit(2000000)
+
+    pdf_file_name = request.json['name']
+    pdf_encoded_content = request.json['payload']
+    apply_dilation = request.json['applyDilation']
+    contrast_factor = request.json['contrastFactor']
+    apply_noise_reduction = request.json['applyNoiseReduction']
+    segmentation_factor = request.json['segmentationFactor']
+    separation_factor = request.json['separationFactor']
+
+    in_memory_pdf_file = base64.b64decode(pdf_encoded_content)
+    open(pdf_file_name, 'wb').write(in_memory_pdf_file)
+
+    images_uid_prefix = str(uuid.uuid4())
+    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+
+    image_index = 0
+    image_filenames = []
+    images_encoded_content = []
+    image_to_process_filename = ''
+    files = [f for f in os.listdir('./images') if images_uid_prefix in f]
+    for file in files:
+        image_index = image_index + 1
+        image_filenames.append(file)
+        images_encoded_content.append((base64.b64encode(open('./images/' + file, 'rb').read())).decode('utf-8'))
+        if image_index == 1:
+            image_to_process_filename = file
+
+    temporary_black_white_image = images_uid_prefix + "_temporary_black_white.png"
+    '''
+    temporary_grayscale = images_uid_prefix + "_temporary_grayscale.png"
+    temporary_contrast = images_uid_prefix + "_temporary_contrast.png"
+    temporary_noise = images_uid_prefix + "_temporary_noise.png"
+    temporary_detect_lines = images_uid_prefix + "_temporary_detect_lines.png"
+    '''
+
+    originalImage = Image.open('./images/' + image_to_process_filename)
+
+    originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
+
+    originalImage = toGrayscale.ToGrayscale(originalImage)
+
+    if apply_dilation:
+        originalImage = dilation.dilation(originalImage)
+        originalImage = dilation.erosion(originalImage)
+
+    if apply_noise_reduction:
+        absoluteImage = noiseRemove.remove_noise(originalImage)
+    else:
+        absoluteImage = contrastAdjustor.AdjustContrast(originalImage, float(contrast_factor))
+        absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+
+    utilities.ImageToFile(absoluteImage, './images/' + temporary_black_white_image)
+    print("Saved black-white image ", temporary_black_white_image)
+
+    lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentation_factor))
+
+    toBoxes.prepareDebug(absoluteImage)  # remove this if you don't want an image with the rectangles
+    toBoxes.GetPixels(absoluteImage)
+    coordinates = toBoxes.fullFlood(linesCoord, separation_factor)
+
+    with open('./images/' + temporary_black_white_image, 'rb') as file:
+        processed_image_payload = (base64.b64encode(file.read())).decode('utf-8')
+
+    return_data = {
+        'names': image_filenames,
+        'payloads': images_encoded_content,
+        'pName': image_to_process_filename,
+        'pPayload': processed_image_payload,
+        'coords': coordinates
+    }
+
+    return json.dumps(return_data)
 
 
 if __name__ == '__main__':
