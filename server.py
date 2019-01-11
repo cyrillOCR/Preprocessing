@@ -5,7 +5,7 @@ import sys
 from io import BytesIO
 from PIL import Image
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import json
 import uuid
 
