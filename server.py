@@ -15,11 +15,13 @@ from src.utilities import ImageToFile, FileToImage
 app = Flask(__name__)
 
 @app.route('/')
+@cross_origin()
 def hello():
     return "GitHub auto update now maybe?"
 
 
 @app.route('/addImage', methods=['GET'])
+@cross_origin()
 def get():
     return "Post only"
 
@@ -85,6 +87,8 @@ def addImage():
             os.remove(tempNoise)
             if os.path.exists(tempContrast):
                 os.remove(tempContrast)
+                if os.path.exists(tempBlackWhite):
+                    os.remove(tempBlackWhite)
 
     newPayload = base64.b64encode(open(tempBlackWhite, "rb").read())
     # newPayload = base64.b16encode(absoluteImage)
@@ -175,6 +179,9 @@ def convert_pdf_to_image():
         'pPayload': processed_image_payload,
         'coords': coordinates
     }
+
+    if os.path.exists('./images/' + temporary_black_white_image):
+        os.remove('./images/' + temporary_black_white_image)
 
     #return json.dumps(return_data)
     return jsonify(json.dumps(return_data)), 200 , {
