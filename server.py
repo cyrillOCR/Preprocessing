@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello world boss"
+    return "GitHub auto update works!"
 
 
 @app.route('/addImage', methods=['GET'])
