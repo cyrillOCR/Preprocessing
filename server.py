@@ -5,6 +5,7 @@ import sys
 from io import BytesIO
 from PIL import Image
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import json
 import uuid
 
@@ -24,6 +25,7 @@ def get():
 
 
 @app.route('/addImage', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def addImage():
     sys.setrecursionlimit(2000000)
     name = request.json['name']
@@ -100,6 +102,7 @@ def addImage():
 
 
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def convert_pdf_to_image():
     sys.setrecursionlimit(2000000)
 
