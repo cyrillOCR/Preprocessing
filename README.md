@@ -1,4 +1,4 @@
-# Preprocessing test
+# Preprocessing
 Preprocessing module for cyrillOCR
 
 ## Dependencies:
