@@ -9,11 +9,13 @@ from flask_cors import CORS, cross_origin
 import json
 import uuid
 
-from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, dilation, convertPDF2img
+from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlackWhite, toBoxes, utilities, resizeImage, \
+    dilation, convertPDF2img
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route('/')
 def hello():
@@ -36,26 +38,15 @@ def addImage():
     segmentationFactor = request.json['segmentationFactor']
     separationFactor = request.json['separationFactor']
 
-    inputPath = "src/images/image.png"
-    outputPath = "src/images/outimage.png"
+    print(
+        'Received image {}\n\tcontrastFactor:{}\n\tapplyDilation:{}\n\tapplyNoiseReduction:{}\n\tsegmentationFactor:{}\n\tseparationFactor:{}\n\t'.format(
+            name, contrastFactor, applyDilation, applyNoiseReduction, segmentationFactor, separationFactor))
 
-    if os.path.exists(outputPath):
-        os.remove(outputPath)
-
-    if os.path.exists(inputPath):
-        os.remove(inputPath)
-
-    image = Image.open(BytesIO(base64.b64decode(payload)))
-
-    image.save(inputPath)
+    originalImage = Image.open(BytesIO(base64.b64decode(payload)))
 
     id = int(round(time.time() * 1000))
-    tempGrayscale = str(id) + "_tempG.png"
-    tempContrast = str(id) + "_tempC.png"
-    tempNoise = str(id) + "_tempN.png"
     tempBlackWhite = str(id) + "_tempBW.png"
 
-    originalImage = FileToImage(inputPath)
     originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
 
     originalImage = toGrayscale.ToGrayscale(originalImage)
@@ -71,7 +62,6 @@ def addImage():
         absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
 
     ImageToFile(absoluteImage, tempBlackWhite)
-    print("Saved black-white image ", tempBlackWhite)
 
     lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentationFactor))
 
@@ -79,28 +69,24 @@ def addImage():
     toBoxes.GetPixels(absoluteImage)
     output = toBoxes.fullFlood(linesCoord, separationFactor)
 
-    if os.path.exists(tempGrayscale):
-        os.remove(tempGrayscale)
-        if os.path.exists(tempNoise):
-            os.remove(tempNoise)
-            if os.path.exists(tempContrast):
-                os.remove(tempContrast)
-                if os.path.exists(tempBlackWhite):
-                    os.remove(tempBlackWhite)
-
     newPayload = base64.b64encode(open(tempBlackWhite, "rb").read())
-    # newPayload = base64.b16encode(absoluteImage)
+
+    # cleanup
+    if os.path.exists(tempBlackWhite):
+        os.remove(tempBlackWhite)
+    if os.path.exists("output_image.jpg"):
+        os.remove("output_image.jpg")
 
     data = {
         "name": name,
         "payload": str(newPayload),
         "coords": output
     }
-    #return json.dumps(data)
-    return jsonify(json.dumps(data)), 200 , {
+    # return json.dumps(data)
+    return jsonify(json.dumps(data)), 200, {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        }
+    }
 
 
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])
@@ -180,13 +166,13 @@ def convert_pdf_to_image():
     if os.path.exists('./images/' + temporary_black_white_image):
         os.remove('./images/' + temporary_black_white_image)
 
-    #return json.dumps(return_data)
-    return jsonify(json.dumps(return_data)), 200 , {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            }
+    # return json.dumps(return_data)
+    return jsonify(json.dumps(return_data)), 200, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+    }
 
 
 if __name__ == '__main__':
     sys.setrecursionlimit(2000000)
-    app.run(host= '0.0.0.0')
+    app.run(host='0.0.0.0')

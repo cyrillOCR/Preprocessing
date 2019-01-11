@@ -192,7 +192,7 @@ def fullFlood(lines, charDistance = 3):
         removeRedundant(lineBoxes)
         lineBoxes.sort(key=getW)
         addToDebug(lineBoxes)
-        print(len(lineBoxes))
+        #print(len(lineBoxes))
         result.extend(lineBoxes)
 
     # write(file)  # remove if you don`t want a file
