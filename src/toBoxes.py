@@ -13,7 +13,6 @@ minH = sys.maxsize
 
 result = list()
 
-
 def getW(x):
     return x[0]
 
@@ -44,6 +43,10 @@ def resetHW():
     maxH = 0
     minH = sys.maxsize
 
+def reset():
+    global result
+    resetHW()
+    result = list()
 
 def inMatrix(x, y):
     global width
@@ -86,6 +89,7 @@ def GetPixels(inp):
     global height
     global pixels
 
+    reset()
     # inp = Image.open(input_path)
     imgPixels = inp.load()
     width, height = inp.size
