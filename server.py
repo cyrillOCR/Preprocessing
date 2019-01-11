@@ -94,8 +94,8 @@ def addImage():
     }
     #return json.dumps(data)
     return jsonify(json.dumps(data)), 200 , {
-        'Acces-Control-Allow-Origin': '*',
-        'Acces-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
         }
 
 
@@ -175,8 +175,8 @@ def convert_pdf_to_image():
 
     #return json.dumps(return_data)
     return jsonify(json.dumps(return_data)), 200 , {
-            'Acces-Control-Allow-Origin': '*',
-            'Acces-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
             }
 
 
