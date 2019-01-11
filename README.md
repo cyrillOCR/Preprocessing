@@ -43,6 +43,13 @@ pip install numpy --user
 pip install imageio --user
 ```
 
+* flask-CORS
+
+```python
+pip install -U flask-cors
+```
+
+
 ## Microservices:
 The module offers two microservices that responds to ```POST``` request:
 
@@ -62,15 +69,15 @@ INPUT:
 ```
   The name is the name of the PDF and the payload is PDF's content encoded in base64. The next 3 parameters are optional. 
   
-  ContrastFactor has a default value of 1.5 and it is between 1 and 3. It represents the ration between the text color intensity and the background color intensity.
+The contrastFactor parameter is used to apply a certain amount of contrast to the image. It is an exponential function, so the default value is one if you want the contrast to be unchanged. A subunitary value will decrease the contrast, while a supraunitary value will increase the contrast of the image. Usually a value between 1.5 and 3.0 is recommended. In our test cased we used 2.0.
   
-  ApplyDilation can be true or false, by default is true. If set, it dilates and erosions the characters, making them more clear, but has very long execution time.
+  ApplyDilation can be true or false, by default is true. If set, it dilates and erosions the characters, making them more clear and improve detection of characters with discontinuous lines such as 'N' or 'K', but has long execution time.
   
   ApplyNoiseReduction can be false or true, by default it is false. If set, it totally removes the noise of the image, making it sharp and clear but increases the execution time.
   
-  SegmentationFactor is between 0.3 and 0.7. Higher value reduce the risk of characters placed on consecutive lines to be selected togheter, but increases the chances to exclude detection of characters such "'" or dot of the "i".
+  SegmentationFactor is between 0.3 and 0.7. Higher value reduce the risk of characters placed on consecutive lines to be selected togheter, but increases the chances to exclude detection of characters placed on upper and lower bound of the line such as "'" or dot of the "i".For most case scenarios we recommend using 0.45 value.
   
-  SeparationFactor is between 2 and 8, depending on the image resolution. It represents the maximum distance in pixels for which two separate characters can be joined. By default is 3.
+  SeparationFactor is between 2 and 4, depending on the image resolution. It represents the maximum distance in pixels for which two separate consecutive characters can be joined. By default is 3 pixels. It is used to improve detection of characters that are altered by conversion to black-white.
   
 OUTPUT:
 ```
@@ -82,7 +89,7 @@ OUTPUT:
   coords: int[][]
 }
 ```
-  It returns the names of the resulted images with their content from the PDF encoded in base64. Pname is the name of the first image which is preprocessed(back-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
+  It returns the names of the resulted images with their content from the PDF encoded in base64. Pname is the name of the first image which is preprocessed(black-white) and the coordinates(upper-left and lower-right) of each character is stored in coords, which is a list of borders.
 
 
 
@@ -100,7 +107,6 @@ INPUT:
   separationFactor: int
 }
 ```
-The contrastFactor parameter is used to apply a certain amount of contrast to the image. It is an exponential function, so the default value is one if you want the contrast to be unchanged. A subunitary value will decrease the contrast, while a supraunitary value will increase the contrast of the image. Usually a value between 1.5 and 3.0 is recommended. In our test cased we used 2.0.
 
 The name is the name of the image and the payload is images's content encoded in base64. The next 3 parameters are optional and are explained above. 
 
