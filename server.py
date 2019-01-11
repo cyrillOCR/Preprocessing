@@ -13,21 +13,19 @@ from src import contrastAdjustor, noiseRemove, detectLines, toGrayscale, toBlack
 from src.utilities import ImageToFile, FileToImage
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
-@cross_origin()
 def hello():
     return "GitHub auto update now maybe?"
 
 
 @app.route('/addImage', methods=['GET'])
-@cross_origin()
 def get():
     return "Post only"
 
 
 @app.route('/addImage', methods=['POST', 'OPTIONS'])
-@cross_origin()
 def addImage():
     sys.setrecursionlimit(2000000)
     name = request.json['name']
@@ -106,7 +104,6 @@ def addImage():
 
 
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])
-@cross_origin()
 def convert_pdf_to_image():
     sys.setrecursionlimit(2000000)
 
