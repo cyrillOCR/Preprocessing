@@ -173,6 +173,42 @@ def convert_pdf_to_image():
     }
 
 
+@app.route('/convertPdf', methods=['POST', 'OPTIONS'])
+def convert_pdf():
+    pdf_file_name = request.json['name']
+    pdf_encoded_content = request.json['payload']
+
+    in_memory_pdf_file = base64.b64decode(pdf_encoded_content)
+    open(pdf_file_name, 'wb').write(in_memory_pdf_file)
+
+    images_uid_prefix = str(uuid.uuid4())
+    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+
+    image_index = 0
+    image_filenames = []
+    images_encoded_content = []
+    files = [f for f in os.listdir('./images') if images_uid_prefix in f]
+    for file in files:
+        image_index = image_index + 1
+        image_filenames.append(file)
+        images_encoded_content.append((base64.b64encode(open('./images/' + file, 'rb').read())).decode('utf-8'))
+        # delete temp img
+        os.remove('./images/' + file)
+
+    # delete pdf
+    os.remove(pdf_file_name)
+
+    return_data = {
+        'names': image_filenames,
+        'payloads': images_encoded_content
+    }
+
+    return jsonify(json.dumps(return_data)), 200, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+    }
+
+
 if __name__ == '__main__':
     sys.setrecursionlimit(2000000)
     app.run(host='0.0.0.0', debug=True)
