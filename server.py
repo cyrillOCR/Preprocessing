@@ -175,4 +175,4 @@ def convert_pdf_to_image():
 
 if __name__ == '__main__':
     sys.setrecursionlimit(2000000)
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
