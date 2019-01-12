@@ -53,7 +53,7 @@ pip install -U flask-cors
 
 
 ## Microservices:
-The module offers two microservices that responds to ```POST``` request:
+The module offers 3 microservices that responds to ```POST``` request:
 
 * One for processing a PDF
 
@@ -123,6 +123,27 @@ OUTPUT:
 
 It returns the name of the preprocessed image and it's content in black-white encoded in base64. The coords is a list of points which represents the bordes of each character detected.
 
+
+* One to convert a pdf to images
+
+INPUT:
+```
+{
+  name: string,
+  payload: string
+}
+```
+It receives the name of the pdf and it's content in payload.
+
+OUTPUT:
+```
+{
+  names: string[],
+  payloads: string[]
+}
+```
+
+It returns a list of images names and their corresponding content.
   
 
 ## Installing a flask server for Python 3, using Windows
