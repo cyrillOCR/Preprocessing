@@ -19,7 +19,7 @@ CORS(app)
 
 @app.route('/')
 def hello():
-    return "GitHub auto update works!"
+    return "GitHub auto update works now!"
 
 
 @app.route('/addImage', methods=['GET'])
