@@ -49,6 +49,8 @@ pip install imageio --user
 pip install -U flask-cors
 ```
 
+* poppler from the following link https://poppler.freedesktop.org/ and include it in your PATH
+
 
 ## Microservices:
 The module offers two microservices that responds to ```POST``` request:
