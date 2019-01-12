@@ -19,7 +19,7 @@ CORS(app)
 
 @app.route('/')
 def hello():
-    return "OMAGA IT WORKS!"
+    return "OMAGA IT WfORKS!"
 
 
 @app.route('/addImage', methods=['GET'])
