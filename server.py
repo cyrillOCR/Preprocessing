@@ -101,6 +101,11 @@ def convert_pdf_to_image():
     segmentation_factor = request.json['segmentationFactor']
     separation_factor = request.json['separationFactor']
 
+    print(
+        'Received pdf {}\n\tcontrastFactor:{}\n\tapplyDilation:{}\n\tapplyNoiseReduction:{}\n\tsegmentationFactor:{}\n\tseparationFactor:{}\n\t'.format(
+            pdf_file_name, contrast_factor, apply_dilation, apply_noise_reduction, segmentation_factor,
+            separation_factor))
+
     in_memory_pdf_file = base64.b64decode(pdf_encoded_content)
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
@@ -118,6 +123,12 @@ def convert_pdf_to_image():
         images_encoded_content.append((base64.b64encode(open('./images/' + file, 'rb').read())).decode('utf-8'))
         if image_index == 1:
             image_to_process_filename = file
+        else:
+            # delete temp img
+            os.remove('./images/' + file)
+
+    # delete pdf
+    os.remove(pdf_file_name)
 
     temporary_black_white_image = images_uid_prefix + "_temporary_black_white.png"
     '''
@@ -148,12 +159,19 @@ def convert_pdf_to_image():
 
     lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentation_factor))
 
-    toBoxes.prepareDebug(absoluteImage)  # remove this if you don't want an image with the rectangles
+    toBoxes.prepareDebug(temporary_black_white_image)  # remove this if you don't want an image with the rectangles
     toBoxes.GetPixels(absoluteImage)
     coordinates = toBoxes.fullFlood(linesCoord, separation_factor)
 
     with open('./images/' + temporary_black_white_image, 'rb') as file:
         processed_image_payload = (base64.b64encode(file.read())).decode('utf-8')
+
+    # cleanup
+    if os.path.exists('./images/' + temporary_black_white_image):
+        os.remove('./images/' + temporary_black_white_image)
+    if os.path.exists("output_image.jpg"):
+        os.remove("output_image.jpg")
+    os.remove('./images/' + image_to_process_filename)
 
     return_data = {
         'names': image_filenames,
@@ -177,6 +195,8 @@ def convert_pdf_to_image():
 def convert_pdf():
     pdf_file_name = request.json['name']
     pdf_encoded_content = request.json['payload']
+
+    print('Received pdf {}\n'.format(pdf_file_name))
 
     in_memory_pdf_file = base64.b64decode(pdf_encoded_content)
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
