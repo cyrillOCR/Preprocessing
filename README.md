@@ -49,7 +49,7 @@ pip install imageio --user
 pip install -U flask-cors
 ```
 
-* poppler from the following link https://poppler.freedesktop.org/ and include it in your PATH
+* poppler from the following link http://blog.alivate.com.au/poppler-windows/ version 0.68.0_x86 and include it in your PATH
 
 
 ## Microservices:
