@@ -193,6 +193,10 @@ def convert_pdf_to_image():
 
 @app.route('/convertPdf', methods=['POST', 'OPTIONS'])
 def convert_pdf():
+
+    if request.method == 'OPTIONS':
+        return ''
+
     pdf_file_name = request.json['name']
     pdf_encoded_content = request.json['payload']
 
