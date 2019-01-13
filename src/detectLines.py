@@ -21,7 +21,7 @@ def getAverageLineHeight(pixelRowMarked):
     if height > 0:
         nrLines += 1
         average += height
-    return average / nrLines
+    return average / max(nrLines, 1)
 
 
 def getMinPixelsAllowed(average, segmentationFactor):
@@ -106,7 +106,7 @@ def DetectLinesFile(inputPath, outputPath, segmentationFactor):
     out, coords = DetectLines(inp, segmentationFactor)
     out.save(outputPath)
     print(coords)
-    f = open("lines.txt","w+")
+    f = open("lines.txt", "w+")
     for c in coords:
         f.write(str(c[0]))
         f.write("\n")
