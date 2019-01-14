@@ -193,7 +193,6 @@ def convert_pdf_to_image():
 
 @app.route('/convertPdf', methods=['POST', 'OPTIONS'])
 def convert_pdf():
-
     if request.method == 'OPTIONS':
         return ''
 
@@ -206,12 +205,12 @@ def convert_pdf():
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
     images_uid_prefix = str(uuid.uuid4())
-    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+    nr_pages = convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
 
     image_index = 0
     image_filenames = []
     images_encoded_content = []
-    files = [f for f in os.listdir('./images') if images_uid_prefix in f]
+    files = [f for f in os.listdir('./images') if f.startswith(images_uid_prefix + "_")]
     for file in files:
         image_index = image_index + 1
         image_filenames.append(file)
@@ -221,6 +220,8 @@ def convert_pdf():
 
     # delete pdf
     os.remove(pdf_file_name)
+
+    print(len(image_filenames))
 
     return_data = {
         'names': image_filenames,
