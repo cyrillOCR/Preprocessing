@@ -205,7 +205,7 @@ def convert_pdf():
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
     images_uid_prefix = str(uuid.uuid4())
-    nr_pages = convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
 
     image_index = 0
     image_filenames = []
@@ -220,8 +220,6 @@ def convert_pdf():
 
     # delete pdf
     os.remove(pdf_file_name)
-
-    print(len(image_filenames))
 
     return_data = {
         'names': image_filenames,

@@ -20,7 +20,7 @@ def savePages(input_file, path, first_p, last_p, page_index, prefix_id):
                               fmt="JPEG", last_page=last_p, first_page=first_p)
     for page in pages:
         page_index += 1
-        page.save("images/" + repr(prefix_id) + "_" + repr(page_index) + ".jpg")
+        page.save("images/" + str(prefix_id) + "_" + str(page_index) + ".jpg")
     return page_index
 
 
