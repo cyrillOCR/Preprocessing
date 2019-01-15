@@ -110,14 +110,15 @@ def convert_pdf_to_image():
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
     images_uid_prefix = str(uuid.uuid4())
-    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+    nr_pages = convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
 
     image_index = 0
     image_filenames = []
     images_encoded_content = []
     image_to_process_filename = ''
-    files = [f for f in os.listdir('./images') if images_uid_prefix in f]
-    for file in files:
+    for i in range(1, nr_pages + 1):
+        file = './images' + images_uid_prefix + '_' + str(i) + '.jpg'
+        print(file)
         image_index = image_index + 1
         image_filenames.append(file)
         images_encoded_content.append((base64.b64encode(open('./images/' + file, 'rb').read())).decode('utf-8'))
@@ -205,18 +206,20 @@ def convert_pdf():
     open(pdf_file_name, 'wb').write(in_memory_pdf_file)
 
     images_uid_prefix = str(uuid.uuid4())
-    convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
+    nr_pages = convertPDF2img.convertToJPG(pdf_file_name, images_uid_prefix)
 
     image_index = 0
     image_filenames = []
     images_encoded_content = []
     files = [f for f in os.listdir('./images') if f.startswith(images_uid_prefix + "_")]
-    for file in files:
+    for i in range(1, nr_pages + 1):
+        file = './images/' + images_uid_prefix + '_' + str(i) + '.jpg'
+        print(file)
         image_index = image_index + 1
         image_filenames.append(file)
-        images_encoded_content.append((base64.b64encode(open('./images/' + file, 'rb').read())).decode('utf-8'))
+        images_encoded_content.append((base64.b64encode(open(file, 'rb').read())).decode('utf-8'))
         # delete temp img
-        os.remove('./images/' + file)
+        os.remove(file)
 
     # delete pdf
     os.remove(pdf_file_name)

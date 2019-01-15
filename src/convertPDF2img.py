@@ -30,6 +30,7 @@ def convertToJPG(input_file, prefix_id):
             os.mkdir('./images')
 
         total_pages = getNumberOfPages(input_file)
+        total = total_pages
         if total_pages <= 5:
             savePages(input_file, path, 1, total_pages, 1, prefix_id)
             return None
@@ -46,7 +47,7 @@ def convertToJPG(input_file, prefix_id):
 
         if total_pages > 0:
             savePages(input_file, path, last_page_index + 1, last_page_index + nr_pages, last_page_index, prefix_id)
-    return total_pages
+    return total
 
 def deletePages(prefix_id, total_pages):
     i = 1
