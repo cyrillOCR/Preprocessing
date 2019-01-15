@@ -32,8 +32,8 @@ def convertToJPG(input_file, prefix_id):
         total_pages = getNumberOfPages(input_file)
         total = total_pages
         if total_pages <= 5:
-            savePages(input_file, path, 1, total_pages, 1, prefix_id)
-            return None
+            savePages(input_file, path, 1, total_pages, 0, prefix_id)
+            return total_pages
 
         nr_pages = 5
         last_page_index = 0
@@ -67,4 +67,4 @@ if __name__ == '__main__':
 
     input_path = argv[1]
     prefix_id = int(argv[2])
-    convertToJPG(input_path, prefix_id)
+    print(convertToJPG(input_path, prefix_id))

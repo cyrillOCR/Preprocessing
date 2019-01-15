@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import os
 import time
 import sys
@@ -223,6 +224,18 @@ def convert_pdf():
 
     # delete pdf
     os.remove(pdf_file_name)
+
+    images_b64_frecv = {}
+    for b64 in images_encoded_content:
+        md5 = hashlib.md5()
+        md5.update(b64.encode())
+        b64_hash = md5.hexdigest()
+        if b64_hash in images_b64_frecv:
+            images_b64_frecv[b64_hash] += 1
+        else:
+            images_b64_frecv[b64_hash] = 1
+
+    print(images_b64_frecv)
 
     return_data = {
         'names': image_filenames,
