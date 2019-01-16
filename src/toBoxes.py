@@ -17,9 +17,9 @@ def getW(x):
     return x[0]
 
 
-def writeDebugImg():
+def writeDebugImg(output_name):
     global debugImg
-    cv2.imwrite("output_boxes.png", debugImg)
+    cv2.imwrite(output_name, debugImg)
 
 
 def addToDebug(rectList):
