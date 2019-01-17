@@ -263,4 +263,4 @@ def convert_pdf():
 
 if __name__ == '__main__':
     sys.setrecursionlimit(2000000)
-    app.run(host='0.0.0.0', debug=True, ssl_context=('/home/dorian/AI/server.crt', '/home/dorian/AI/server.key'))
+    app.run(host='0.0.0.0', debug=True)
