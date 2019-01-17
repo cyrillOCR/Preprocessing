@@ -38,56 +38,69 @@ def addImage():
     applyNoiseReduction = request.json['applyNoiseReduction']
     segmentationFactor = request.json['segmentationFactor']
     separationFactor = request.json['separationFactor']
+    tempBlackWhite = ''
 
     print(
         'Received image {}\n\tcontrastFactor:{}\n\tapplyDilation:{}\n\tapplyNoiseReduction:{}\n\tsegmentationFactor:{}\n\tseparationFactor:{}\n\t'.format(
             name, contrastFactor, applyDilation, applyNoiseReduction, segmentationFactor, separationFactor))
 
-    originalImage = Image.open(BytesIO(base64.b64decode(payload)))
+    try:
 
-    id = int(round(time.time() * 1000))
-    tempBlackWhite = str(id) + "_tempBW.png"
+        originalImage = Image.open(BytesIO(base64.b64decode(payload)))
 
-    originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
+        id = int(round(time.time() * 1000))
+        tempBlackWhite = str(id) + "_tempBW.png"
 
-    originalImage = toGrayscale.ToGrayscale(originalImage)
+        originalImage = resizeImage.resizeImg(originalImage, 2000, 1900)
 
-    if applyDilation:
-        originalImage = dilation.dilation(originalImage)
-        originalImage = dilation.erosion(originalImage)
+        originalImage = toGrayscale.ToGrayscale(originalImage)
 
-    if applyNoiseReduction:
-        absoluteImage = noiseRemove.remove_noise(originalImage)
-    else:
-        absoluteImage = contrastAdjustor.AdjustContrast(originalImage, float(contrastFactor))
-        absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
+        if applyDilation:
+            originalImage = dilation.dilation(originalImage)
+            originalImage = dilation.erosion(originalImage)
 
-    ImageToFile(absoluteImage, tempBlackWhite)
+        if applyNoiseReduction:
+            absoluteImage = noiseRemove.remove_noise(originalImage)
+        else:
+            absoluteImage = contrastAdjustor.AdjustContrast(originalImage, float(contrastFactor))
+            absoluteImage = toBlackWhite.ToBlackAndWhite(absoluteImage)
 
-    lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentationFactor))
+        ImageToFile(absoluteImage, tempBlackWhite)
 
-    toBoxes.prepareDebug(tempBlackWhite)  # remove this if you don't want an image with the rectangles
-    toBoxes.GetPixels(absoluteImage)
-    output = toBoxes.fullFlood(linesCoord, separationFactor)
+        lines, linesCoord = detectLines.DetectLines(absoluteImage, float(segmentationFactor))
 
-    newPayload = base64.b64encode(open(tempBlackWhite, "rb").read())
+        toBoxes.prepareDebug(tempBlackWhite)  # remove this if you don't want an image with the rectangles
+        toBoxes.GetPixels(absoluteImage)
+        output = toBoxes.fullFlood(linesCoord, separationFactor)
 
-    # cleanup
-    if os.path.exists(tempBlackWhite):
-        os.remove(tempBlackWhite)
-    if os.path.exists("output_image.jpg"):
-        os.remove("output_image.jpg")
+        newPayload = base64.b64encode(open(tempBlackWhite, "rb").read())
 
-    data = {
-        "name": name,
-        "payload": str(newPayload),
-        "coords": output
-    }
-    # return json.dumps(data)
-    return jsonify(json.dumps(data)), 200, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-    }
+        # cleanup
+        if os.path.exists(tempBlackWhite):
+            os.remove(tempBlackWhite)
+        if os.path.exists("output_image.jpg"):
+            os.remove("output_image.jpg")
+
+        data = {
+            "name": name,
+            "payload": str(newPayload),
+            "coords": output
+        }
+        # return json.dumps(data)
+        return jsonify(json.dumps(data)), 200, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        }
+    except Exception as err:
+        print("!!!Error: ", err)
+        if os.path.exists(tempBlackWhite):
+            os.remove(tempBlackWhite)
+        if os.path.exists("output_image.jpg"):
+            os.remove("output_image.jpg")
+        return jsonify(json.dumps(str(err))), 500, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        }
 
 
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])

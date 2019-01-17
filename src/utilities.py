@@ -5,4 +5,5 @@ def FileToImage(inputPath):
     return inp
 
 def ImageToFile(image, outputPath):
+    image = image.convert("RGB")
     image.save(outputPath)
