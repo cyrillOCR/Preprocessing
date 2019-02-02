@@ -31,7 +31,7 @@ result = list()
 
 """
 Q: Why didn't you use a class for points? Why an array?
-A: Back when I wrote this I didn't think it had to be mentained so I just wrote it to work and no to look pretty
+A: Back when I wrote this I didn't think it had to be mentained so I just wrote it to work and not to look pretty
 """
 def getW(x):
     return x[0]
@@ -110,7 +110,7 @@ Starts a flood on the pixel matrix starting from the point (x,y). GetPixels MUST
 First it checks if the input is valid (inMatrix) then checks if this point is not visited and a black pixel (pixels[x][y] == 1).
 If the point is not visited and part of a character (black) it updated the global variables for the current box.
 Then it will recursively call itself for all 8 adjacent pixels.
-The flood will stop when there is no black point connected to any of the proccesed points.
+The flood will stop when there is no black point connected to any of the processed points.
 	:param x: x coord
 	:param y: y coord
 """
@@ -164,7 +164,7 @@ def GetPixels(inp):
 
 
 """
-Checks if a rectangle is completly in another rectangle (the smaller one will be removed later)
+Checks if a rectangle is completely in another rectangle (the smaller one will be removed later)
 	:returns true if y is in x
 """
 def isCompletlyIn(x, y):
@@ -172,7 +172,7 @@ def isCompletlyIn(x, y):
 
 
 """
-Removes rectangles that are completly in another rectangle
+Removes rectangles that are completely in another rectangle
 	:param rectangles: list of rectangles to remove from
 	:returns the list without them
 """
