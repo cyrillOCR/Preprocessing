@@ -1,5 +1,10 @@
 from PIL import Image
 from sys import argv
+"""Rescales image according to some desired size
+    :param image: a given image
+    :param maxSize: a number representing an upper bound for the number of pixels
+    :param properSize: a number representing the new, expected maximum number of pixels after refactoring
+"""
 def resizeImg(image, maxSize, properSize):
     width, height = image.size
     percentage = (int(properSize)*100)/int(maxSize)
