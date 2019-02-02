@@ -2,14 +2,19 @@ from pprint import pprint
 from PIL import Image
 from sys import argv
 
-
+"""Opens a grayscale file, and then users ToBlackAndWhite to convert it to only pure black and pure white
+    :param inputPath: the path to a the input file that needs to be processed
+    :param outputPath: the path where the result of the operation goes
+"""
 def ToBlackAndWhiteFile(inputPath,outputPath):
     inp = Image.open(input_path)
     out = ToBlackAndWhite(inp)
     out.save(outputPath)
 
 
-
+"""Converts all the pixels from grayscale to pure black and pure white using a PIL.Image object
+    :param image: a PIL.Image object that we want to convert
+"""
 def ToBlackAndWhite(image):
     out = Image.new( image.mode, image.size)
 
