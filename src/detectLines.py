@@ -2,10 +2,17 @@ from PIL import Image
 from sys import argv
 
 
+"""Returns the average black pixels per pixel row
+    :param pixelRowSum: a list consisting in the number of the black pixels on each row of pixels
+"""
 def getAveragePixelsPerLine(pixelRowSum):
     return sum(pixelRowSum) / max(len(pixelRowSum), 1)
 
 
+"""Returns the average height of the detected lines
+    :note: a line is defined as a consecutive pixel rows labeled with 1
+    :param pixelRowMarked: a list consisting in the number of the black pixels on each row of pixels
+"""
 def getAverageLineHeight(pixelRowMarked):
     average = 0
     nrLines = 0
@@ -24,10 +31,18 @@ def getAverageLineHeight(pixelRowMarked):
     return average / max(nrLines, 1)
 
 
+"""Returns the minimum number of black pixels for which a pixel row is selected as part of a line of text
+    :param average: the average number of pixels per row of pixels
+    :param segmentationFactor: the user input to modify the height of the resulted lines
+"""
 def getMinPixelsAllowed(average, segmentationFactor):
     return segmentationFactor * average
 
 
+"""Get median distance between detected lines
+    :param pixelRowMarked: a list consisting in the number of the black pixels on each row of pixels
+    :returns the median distance between lines
+"""
 def getMedianDistanceBetweenLines(pixelRowMarked):
     spaceHeight = list()
     height = 0
@@ -42,6 +57,11 @@ def getMedianDistanceBetweenLines(pixelRowMarked):
     return spaceHeight[int(len(spaceHeight) / 2)]
 
 
+"""Combine short lines that are detected incorrect, based on the average height of the lines and the median height of 
+    the space between lines
+    :param pixelRowMarked: a list consisting in the number of the black pixels on each row of pixels
+    :returns pixelRowMarked
+"""
 def combineSmallLines(pixelRowMarked):
     averageHeight = getAverageLineHeight(pixelRowMarked)
     spaceMedianHeight = getMedianDistanceBetweenLines(pixelRowMarked)
@@ -54,13 +74,11 @@ def combineSmallLines(pixelRowMarked):
         else:
             # if is a small line
             if height < averageHeight * 0.5 and height != 0:
-                # print("Linia mica: " + str(i))
                 # if the space above is much bellow the median concatenate the tall line with the line above
                 # else if the space bellow is much bellow the median concatenate the tall line with the line bellow
                 j = i - height - 1
                 while j > 0 and pixelRowMarked[j] == 0:
                     j -= 1
-                # print("Inaltime spatiu deasupra: " + str(i - j))
                 if j > 0 and (i - j <= spaceMedianHeight * 0.5 or i - j <= 3):
                     # concatenate with the line above, by turn white pixel into black
                     while j < i - height:
@@ -84,7 +102,10 @@ def combineSmallLines(pixelRowMarked):
         i += 1
     return pixelRowMarked
 
-
+"""Delete short detected lines, based on average line height
+    :param pixelRowMarked: a list consisting in the number of the black pixels on each row of pixels
+    :returns pixelRowMarked
+"""
 def deleteSmallLines(pixelRowMarked):
     averageHeight = getAverageLineHeight(pixelRowMarked)
     height = 0
@@ -101,6 +122,8 @@ def deleteSmallLines(pixelRowMarked):
     return pixelRowMarked
 
 
+"""Only for debugging purposes
+"""
 def DetectLinesFile(inputPath, outputPath, segmentationFactor):
     inp = Image.open(inputPath)
     out, coords = DetectLines(inp, segmentationFactor)
@@ -114,7 +137,14 @@ def DetectLinesFile(inputPath, outputPath, segmentationFactor):
         f.write("\n")
 
 
-# return a list of tuples for each line detected: (upper bound of line, lower bound of line)
+"""Detects the lines of text from the image
+    :param inp: the image object returned from Image.open()
+    :param segmentationFactor: a number in [0.3,0,7] interval that represents how closed are the lines to each other
+    :note:  if segmentationFactor is bigger the lines will be shorter
+            if segmentationFactor is lower the lines will be taller
+    :returns a list of tuples for each line detected, each tuple represents the upper bound of the line and lower bound
+        of the line        
+"""
 def DetectLines(inp, segmentationFactor):
     out = Image.new(inp.mode, inp.size)
 

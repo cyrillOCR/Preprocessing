@@ -14,6 +14,18 @@ import dilation
 import sys
 from utilities import FileToImage, ImageToFile
 
+"""This code is for debugging and testing
+It contains all the steps for image preprocessing:
+    -image resize
+    -convert image to grayscale
+    -apply dilation and erosion
+    -apply noise remove
+    -adjust image contrast
+    -convert image to black and white
+    -detect lines of text
+    -detect characters
+"""
+
 if __name__ == '__main__':
     if (len(argv) < 2 or len(argv) > 10):
         print(
