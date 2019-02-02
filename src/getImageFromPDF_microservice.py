@@ -16,6 +16,14 @@ import convertPDF2img, toGrayscale, utilities, noiseRemove, toBlackWhite, detect
 app = Flask(__name__)
 
 
+"""The microservice responsable for managing requests regarding getting a PDF and returning the processed images
+The microservice recives a name for the PDF, the PDF's payload, and the boolean parameters for applying the noise reduction and the segmentation factor
+The microservice reconstructs the PDF localy, and then converts each page of the PDF to a JPG image, with an unique ID in its name.
+For the first image, all needed processing is done (segmentationm noise remove - if specified), returning the payload of the
+processed image, as well as the coordinates from the segmentation, and the name of the image
+For the rest, it returns an array of payloads and names of the images
+"""
+
 @app.route('/multipart/form-data', methods=['POST'])
 def convert_pdf_to_image():
 
