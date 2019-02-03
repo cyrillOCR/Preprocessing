@@ -28,6 +28,14 @@ def get():
     return "Post only"
 
 
+"""The microservice responsable for managing requests regarding getting an image(JPEG/PNG) and returning the processed
+ image.
+The microservice recives a name for the image, the image's payload, the boolean parameters for applying the noise
+ reduction and dilation(expansion), two floats representing the contrastFactor and the segmentationFactor and one int 
+ for the separationFactor.
+The microservice process the image according given parameters and returns the name of the image converted to
+ black-white, it's payload and the coordinates for each detected character(upper-left and lower-right).
+"""
 @app.route('/addImage', methods=['POST', 'OPTIONS'])
 def addImage():
     sys.setrecursionlimit(2000000)
@@ -103,6 +111,13 @@ def addImage():
         }
 
 
+"""The microservice responsable for managing requests regarding getting a PDF and returning the processed images
+The microservice recives a name for the PDF, the PDF's payload, and the boolean parameters for applying the noise reduction and the segmentation factor
+The microservice reconstructs the PDF localy, and then converts each page of the PDF to a JPG image, with an unique ID in its name.
+For the first image, all needed processing is done (segmentationm noise remove - if specified), returning the payload of the
+processed image, as well as the coordinates from the segmentation, and the name of the image
+For the rest, it returns an array of payloads and names of the images
+"""
 @app.route('/addPdf', methods=['POST', 'OPTIONS'])
 def convert_pdf_to_image():
     sys.setrecursionlimit(2000000)
@@ -206,6 +221,12 @@ def convert_pdf_to_image():
     }
 
 
+"""The microservice responsable for managing requests regarding getting a PDF and returning the each page of the PDF
+ as an JPEG image.
+The microservice recives a name for the PDF and the PDF's payload.
+The microservice reconstructs the PDF localy, and then converts each page of the PDF to a JPG image, with an unique ID
+ in its name.
+"""
 @app.route('/convertPdf', methods=['POST', 'OPTIONS'])
 def convert_pdf():
     if request.method == 'OPTIONS':
